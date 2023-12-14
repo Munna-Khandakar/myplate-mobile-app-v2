@@ -3,10 +3,10 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
   ActivityIndicator,
+  Button,
 } from 'react-native';
 import React, {useState} from 'react';
 import COLORS from '../../utils/Colors';
@@ -17,61 +17,37 @@ import {userRegistration, verifyUser} from '../../requests/auth';
 import Toast from 'react-native-toast-message';
 import {API_URL} from '../../utils/Requests';
 import axios from 'axios';
+import InputField from '../../components/common/InputField';
+import {useForm, Controller} from 'react-hook-form';
 
 const RegistrationScreen = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDisable, setIsDisable] = useState(false);
-  const [username, setUsername] = useState('munna');
-  const [password, setPassword] = useState('11111111');
-  const [confirmPassword, setConfirmPassword] = useState('11111111');
   const [mobile, setMobile] = useState('01794807577');
-  const [otp, setOtp] = useState('123212');
-  const [promo, setPromo] = useState('');
   const [seePassword, setSeePassword] = useState(false);
   const [seeConfirmPassword, setSeeConfirmPassword] = useState(false);
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm({
+    defaultValues: {
+      username: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
+  const onSubmit = data => {
+    console.log(data); // { name: 'John Doe', email: 'johndoe@example.com' }
+  };
+
   const showToast = (type, text1, text2) => {
     Toast.show({
       type: type,
       text1: text1,
       text2: text2,
     });
-  };
-
-  const handleFormSubmit = async () => {
-    if (password !== confirmPassword) {
-      showToast(
-        'error',
-        'Check Your Passwords',
-        'Password and Confirm Password not matched',
-      );
-    }
-    const payload = {
-      name: username,
-      phone: mobile,
-      otp_code: otp,
-      password,
-      promoCode: promo,
-      registerBy: 'phone',
-    };
-
-    axios
-      .post(`${API_URL}/register`, JSON.stringify(payload), {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(response => {
-        console.log('response', response.data);
-        showToast(
-          'success',
-          'Congratulations',
-          'Your account is created,Login to procceed',
-        );
-        navigation.navigate('LoginScreen');
-      })
-      .catch(error => {
-        showToast('error', 'Invalid Credentials', error.response.data.error);
-      });
   };
 
   //async await verification code sender function
@@ -133,6 +109,7 @@ const RegistrationScreen = ({navigation}) => {
       setIsDisable(false);
     }, 180000);
   };
+
   return (
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
       <View style={{paddingHorizontal: 10}}>
@@ -158,114 +135,67 @@ const RegistrationScreen = ({navigation}) => {
           Registration
         </Text>
 
-        <FormInputField
-          icon={require('../../assets/user.png')}
-          placeholder="username"
-          value={username}
-          onChangeHandlar={txt => setUsername(txt)}
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({field: {onChange, onBlur, value}}) => (
+            <InputField
+              label="User Name"
+              placeholder="User Name"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="username"
         />
-        <FormInputField
-          icon={require('../../assets/password.png')}
-          placeholder="password"
-          value={password}
-          onChangeHandlar={password => setPassword(password)}
-          secureTextEntry={!seePassword}>
-          <TouchableOpacity
-            onPress={() => {
-              setSeePassword(p => !p);
-            }}>
-            {seePassword ? (
-              <Image
-                source={require('../../assets/eye-on.png')}
-                style={{
-                  height: 20,
-                  width: 20,
-                  resizeMode: 'stretch',
-                  marginRight: 5,
-                }}
-              />
-            ) : (
-              <Image
-                source={require('../../assets/eye-off.png')}
-                style={{
-                  height: 20,
-                  width: 20,
-                  resizeMode: 'stretch',
-                  marginRight: 5,
-                }}
-              />
-            )}
-          </TouchableOpacity>
-        </FormInputField>
-        <FormInputField
-          icon={require('../../assets/password.png')}
-          placeholder="confirm password"
-          value={confirmPassword}
-          onChangeHandlar={password => setConfirmPassword(password)}
-          secureTextEntry={!seeConfirmPassword}>
-          <TouchableOpacity
-            onPress={() => {
-              setSeeConfirmPassword(p => !p);
-            }}>
-            {seeConfirmPassword ? (
-              <Image
-                source={require('../../assets/eye-on.png')}
-                style={{
-                  height: 20,
-                  width: 20,
-                  resizeMode: 'stretch',
-                  marginRight: 5,
-                }}
-              />
-            ) : (
-              <Image
-                source={require('../../assets/eye-off.png')}
-                style={{
-                  height: 20,
-                  width: 20,
-                  resizeMode: 'stretch',
-                  marginRight: 5,
-                }}
-              />
-            )}
-          </TouchableOpacity>
-        </FormInputField>
-        <FormInputField
-          icon={require('../../assets/icons/telephone.png')}
-          placeholder="mobile"
-          value={mobile}
-          onChangeHandlar={txt => setMobile(txt)}>
-          <View>
-            <TouchableOpacity
-              disabled={isDisable}
-              onPress={verificationCodeHandler}>
-              {isLoading ? (
-                <ActivityIndicator size={'small'} color={COLORS.main} />
-              ) : (
-                <Text
-                  style={{
-                    color: `${
-                      isDisable ? COLORS.secureTextEntry : COLORS.main
-                    }`,
-                  }}>
-                  Send OTP
-                </Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        </FormInputField>
-        <FormInputField
-          icon={require('../../assets/icons/otp.png')}
-          placeholder="otp code"
-          value={otp}
-          onChangeHandlar={txt => setOtp(txt)}
+        {errors.username && (
+          <Text style={styles.errorMessage}>This is required.</Text>
+        )}
+
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({field: {onChange, onBlur, value}}) => (
+            <InputField
+              label="Password"
+              placeholder="password"
+              secureTextEntry={true}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="password"
         />
-        <FormInputField
-          icon={require('../../assets/icons/promotion.png')}
-          placeholder="promo code"
-          value={promo}
-          onChangeHandlar={txt => setPromo(txt)}
+        {errors.password && (
+          <Text style={styles.errorMessage}>This is required.</Text>
+        )}
+
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({field: {onChange, onBlur, value}}) => (
+            <InputField
+              label="Confirm Password"
+              placeholder="confirm password"
+              secureTextEntry={true}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+            />
+          )}
+          name="confirmPassword"
         />
+        {errors.password && (
+          <Text style={styles.errorMessage}>This is required.</Text>
+        )}
       </View>
 
       {/*buttons */}
@@ -276,7 +206,10 @@ const RegistrationScreen = ({navigation}) => {
           }}
           text="Back?"
         />
-        <MainActionButton pressHandler={handleFormSubmit} text="Register" />
+        <MainActionButton
+          pressHandler={handleSubmit(onSubmit)}
+          text="Register"
+        />
       </View>
       <View style={{flexDirection: 'row', justifyContent: 'center'}}>
         <Text>Already Registered?</Text>
@@ -293,4 +226,10 @@ const RegistrationScreen = ({navigation}) => {
 
 export default RegistrationScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  errorMessage: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 5,
+  },
+});

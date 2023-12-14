@@ -12,7 +12,7 @@ const OrderBottomSheet = ({plate}) => {
   const countryCode = useCountryCode();
   const [plateAmount, setPlateAmount] = useState(1);
   const [plateCost, setPlateCost] = useState(0);
-  const [maxPlateToOrder, setMaxPlateToOrder] = useState(10);
+  const [maxPlateToOrder, setMaxPlateToOrder] = useState(plate?.quantity || 3);
   const [selectedLocationId, setSelectedLocationId] = useState('1');
 
   useEffect(() => {
@@ -116,6 +116,19 @@ const OrderBottomSheet = ({plate}) => {
         </View>
       </TouchableOpacity>
     );
+  };
+
+  const createOrderhandler = () => {
+    const data = {
+      deliveryCharge_info: '61cb340584d2c97728f3ae51',
+      delivery_address: 'Dhaka',
+      host_info: plate?.host_profile?._id,
+      item_quantity: plateAmount,
+      note: '',
+      plate_info: plate?._id,
+      total_price: plateCost,
+    };
+    console.log(data);
   };
 
   return (
@@ -273,7 +286,10 @@ const OrderBottomSheet = ({plate}) => {
         </View>
       </View>
       <View style={{flexDirection: 'row', width: '100%'}}>
-        <MainActionButton text="CONFIRM ORDER" pressHandler={() => {}} />
+        <MainActionButton
+          text="CONFIRM ORDER"
+          pressHandler={createOrderhandler}
+        />
       </View>
     </View>
   );
