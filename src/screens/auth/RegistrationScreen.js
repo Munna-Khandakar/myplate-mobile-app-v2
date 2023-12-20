@@ -5,15 +5,11 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ActivityIndicator,
-  Button,
 } from 'react-native';
 import React, {useState} from 'react';
 import COLORS from '../../utils/Colors';
 import SecondaryActionButton from '../../components/SecondaryActionButton';
 import MainActionButton from '../../components/MainActionButton';
-import FormInputField from '../../components/common/FormInputField';
-import {userRegistration, verifyUser} from '../../requests/auth';
 import Toast from 'react-native-toast-message';
 import {API_URL} from '../../utils/Requests';
 import axios from 'axios';
@@ -21,25 +17,52 @@ import InputField from '../../components/common/InputField';
 import {useForm, Controller} from 'react-hook-form';
 
 const RegistrationScreen = ({navigation}) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDisable, setIsDisable] = useState(false);
-  const [mobile, setMobile] = useState('01794807577');
-  const [seePassword, setSeePassword] = useState(false);
-  const [seeConfirmPassword, setSeeConfirmPassword] = useState(false);
+  const [mobile, setMobile] = useState('');
+  const [verifiedPhone, setVerifiedPhone] = useState(true);
+  const [isDiasble, setIsDisable] = useState(false);
+
   const {
     control,
+    setValue,
     handleSubmit,
+    reset,
     formState: {errors},
   } = useForm({
     defaultValues: {
       username: '',
       password: '',
       confirmPassword: '',
+      phone: '01794807577',
+      otp: '',
     },
   });
 
   const onSubmit = data => {
-    console.log(data); // { name: 'John Doe', email: 'johndoe@example.com' }
+    axios
+      .post(`${API_URL}/register`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => {
+        showToast(
+          'success',
+          response.data.message,
+          response?.data?.data?.message,
+        );
+        console.log(response.data);
+        if (response.data.message == 'Success') {
+          reset();
+          navigation.navigate('LoginScreen');
+        }
+      })
+      .catch(error => {
+        showToast(
+          'error',
+          error.response.data.message,
+          error.response.data.error,
+        );
+      });
   };
 
   const showToast = (type, text1, text2) => {
@@ -53,11 +76,8 @@ const RegistrationScreen = ({navigation}) => {
   //async await verification code sender function
   const verificationCodeHandler = async () => {
     let only_phone_number = 0;
-    setIsLoading(true);
-    let verifyData;
     const phone = mobile;
     if (!phone) {
-      setIsLoading(false);
       return showToast(
         'error',
         "Phone Number can't be empty",
@@ -69,7 +89,6 @@ const RegistrationScreen = ({navigation}) => {
       // regualr expression checking to remove country code and extra spaces and dash
       only_phone_number = phone.replace(/\D/g, '').slice(-11);
       if (only_phone_number.length !== 11) {
-        setIsLoading(false);
         return showToast(
           'error',
           'Invalid Phone Number',
@@ -78,27 +97,27 @@ const RegistrationScreen = ({navigation}) => {
       }
     }
 
-    verifyData = {
-      value: only_phone_number,
-      registerBy: 'phone',
-    };
-
     axios
-      .post(`${API_URL}/verify`, verifyData, {
-        headers: {
-          'Content-Type': 'application/json',
+      .post(
+        `${API_URL}/otp`,
+        {phone: only_phone_number},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      })
+      )
       .then(response => {
-        console.log('response', response);
-        setIsLoading(false);
-        setIsDisable(true);
+        console.log('response', response.data);
         wait3min();
-        showToast('success', 'Invalid Credentials', response?.data?.success);
+        showToast('success', response.message, response?.data?.data?.message);
+        if (response.message == 'Success') {
+          setValue('phone', only_phone_number);
+          setVerifiedPhone(true);
+        }
       })
       .catch(error => {
-        setIsLoading(false);
-        setIsDisable(false);
+        console.log({error: error.response.data});
         showToast('error', 'Invalid Credentials', error.response.data.error);
       });
   };
@@ -112,105 +131,150 @@ const RegistrationScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
-      <View style={{paddingHorizontal: 10}}>
-        <View style={{alignItems: 'center'}}>
-          <Image
-            source={require('../../assets/main-logo.png')}
+      <View>
+        <View>
+          <View style={{alignItems: 'center'}}>
+            <Image
+              source={require('../../assets/main-logo.png')}
+              style={{
+                height: 150,
+                width: 150,
+                resizeMode: 'stretch',
+                marginBottom: 20,
+              }}
+            />
+          </View>
+          <Text
             style={{
-              height: 150,
-              width: 150,
-              resizeMode: 'stretch',
-              marginBottom: 20,
-            }}
-          />
+              fontSize: 28,
+              fontWeight: '500',
+              marginBottom: 30,
+              textAlign: 'left',
+              color: COLORS.main,
+              paddingHorizontal: 10,
+            }}>
+            Registration
+          </Text>
         </View>
-        <Text
-          style={{
-            fontSize: 28,
-            fontWeight: '500',
-            marginBottom: 30,
-            textAlign: 'left',
-            color: COLORS.main,
-          }}>
-          Registration
-        </Text>
-
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({field: {onChange, onBlur, value}}) => (
+        {!verifiedPhone ? (
+          <View>
             <InputField
-              label="User Name"
-              placeholder="User Name"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
+              label="Phone Number"
+              placeholder="01XXXXXXXXX"
+              onChangeText={setMobile}
+              value={mobile}
             />
-          )}
-          name="username"
-        />
-        {errors.username && (
-          <Text style={styles.errorMessage}>This is required.</Text>
-        )}
 
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <InputField
-              label="Password"
-              placeholder="password"
-              secureTextEntry={true}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
+            <View
+              style={{
+                flexDirection: 'row',
+                width: '100%',
+              }}>
+              <MainActionButton
+                pressHandler={verificationCodeHandler}
+                text="Send OTP"
+              />
+            </View>
+          </View>
+        ) : (
+          <View>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({field: {onChange, onBlur, value}}) => (
+                <InputField
+                  label="User Name"
+                  placeholder="User Name"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name="username"
             />
-          )}
-          name="password"
-        />
-        {errors.password && (
-          <Text style={styles.errorMessage}>This is required.</Text>
-        )}
+            {errors.username && (
+              <Text style={styles.errorMessage}>This is required.</Text>
+            )}
 
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <InputField
-              label="Confirm Password"
-              placeholder="confirm password"
-              secureTextEntry={true}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({field: {onChange, onBlur, value}}) => (
+                <InputField
+                  label="Password"
+                  placeholder="password"
+                  secureTextEntry={true}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name="password"
             />
-          )}
-          name="confirmPassword"
-        />
-        {errors.password && (
-          <Text style={styles.errorMessage}>This is required.</Text>
+            {errors.password && (
+              <Text style={styles.errorMessage}>This is required.</Text>
+            )}
+
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({field: {onChange, onBlur, value}}) => (
+                <InputField
+                  label="Confirm Password"
+                  placeholder="confirm password"
+                  secureTextEntry={true}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name="confirmPassword"
+            />
+            {errors.password && (
+              <Text style={styles.errorMessage}>This is required.</Text>
+            )}
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({field: {onChange, onBlur, value}}) => (
+                <InputField
+                  label="OTP"
+                  placeholder="otp"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name="otp"
+            />
+            {errors.otp && (
+              <Text style={styles.errorMessage}>This is required.</Text>
+            )}
+            {/*buttons */}
+            <View style={{flexDirection: 'row', width: '100%'}}>
+              <SecondaryActionButton
+                pressHandler={() => {
+                  navigation.goBack();
+                }}
+                text="Back?"
+              />
+              <MainActionButton
+                pressHandler={handleSubmit(onSubmit)}
+                text="Register"
+              />
+            </View>
+          </View>
         )}
       </View>
 
-      {/*buttons */}
-      <View style={{flexDirection: 'row', width: '100%'}}>
-        <SecondaryActionButton
-          pressHandler={() => {
-            navigation.goBack();
-          }}
-          text="Back?"
-        />
-        <MainActionButton
-          pressHandler={handleSubmit(onSubmit)}
-          text="Register"
-        />
-      </View>
       <View style={{flexDirection: 'row', justifyContent: 'center'}}>
         <Text>Already Registered?</Text>
         <TouchableOpacity

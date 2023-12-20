@@ -16,6 +16,7 @@ export default InputField;
 const styles = StyleSheet.create({
   inputContainer: {
     marginVertical: 5,
+    paddingHorizontal: 10,
   },
   label: {
     fontSize: 16,
