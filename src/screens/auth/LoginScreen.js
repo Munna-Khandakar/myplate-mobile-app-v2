@@ -18,13 +18,29 @@ import useAuthStore from '../../stores/authStore';
 import COLORS from '../../utils/Colors';
 import SecondaryActionButton from '../../components/SecondaryActionButton';
 import MainActionButton from '../../components/MainActionButton';
+import {useForm, Controller} from 'react-hook-form';
+import InputField from '../../components/common/InputField';
+import api from './../../requests/api';
+import axios from 'axios';
+import {API_URL} from '../../utils/Requests';
 
 const LoginScreen = ({navigation}) => {
   const [username, setUserName] = useState('01794807577');
   const [password, setPassword] = useState('11111111');
-  const [seePassword, setSeePassword] = useState(false);
-  // const user_token = useAuthStore(state => state.user_token);
   const storeUserToken = useAuthStore(state => state.storeUserToken);
+
+  const {
+    control,
+    setValue,
+    handleSubmit,
+    reset,
+    formState: {errors},
+  } = useForm({
+    defaultValues: {
+      username: '',
+      password: '',
+    },
+  });
 
   useEffect(() => {
     AsyncStorage.getItem('user_token').then(value => {
@@ -34,42 +50,6 @@ const LoginScreen = ({navigation}) => {
     });
   }, []);
 
-  const handleSubmitPress = async () => {
-    const payload = {username, password};
-    try {
-      const login = await userLogin(payload);
-      if (login?.status == 204) {
-        showToast(
-          'error',
-          'Invalid Credentials',
-          'The username or password you have entered is invalid',
-        );
-      } else if (login?.status == 404) {
-        showToast(
-          'error',
-          'Something Went Wrong',
-          'Something Went Wrong,Please try later',
-        );
-      } else if (login?.status == 201) {
-        //login successfull
-        AsyncStorage.setItem('user_token', login?.data?.token);
-        storeUserToken(login?.data?.token);
-      } else {
-        showToast(
-          'error',
-          'Something Went Wrong',
-          'Invalid Credentials or Server Issue',
-        );
-      }
-    } catch (error) {
-      showToast(
-        'error',
-        'Something Went Wrong',
-        'Something Went Wrong,Please try later',
-      );
-    }
-  };
-
   const showToast = (type, text1, text2) => {
     Toast.show({
       type: type,
@@ -78,9 +58,25 @@ const LoginScreen = ({navigation}) => {
     });
   };
 
+  const onSubmit = async data => {
+    try {
+      const res = await axios.post(`${API_URL}/login`, data);
+      if (res.statusCode !== 201) {
+        return showToast('error', res.error, res.message);
+      }
+      if (res.statusCode == 201) {
+        const token = res.data.token;
+        AsyncStorage.setItem('user_token', token);
+        storeUserToken(token);
+      }
+    } catch (error) {
+      showToast('error', error.error, error.message);
+    }
+  };
+
   return (
     <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
-      <View style={{paddingHorizontal: 10}}>
+      <View>
         <View style={{alignItems: 'center'}}>
           <Image
             source={require('../../assets/main-logo.png')}
@@ -99,85 +95,54 @@ const LoginScreen = ({navigation}) => {
             marginBottom: 30,
             textAlign: 'left',
             color: COLORS.main,
+            paddingHorizontal: 10,
           }}>
           Login
         </Text>
         <KeyboardAvoidingView enabled>
-          <View
-            style={{
-              flexDirection: 'row',
-              borderBottomColor: '#ccc',
-              borderBottomWidth: 1,
-              paddingBottom: 8,
-              marginBottom: 25,
-            }}>
-            <Image
-              source={require('../../assets/user.png')}
-              style={{
-                height: 20,
-                width: 20,
-                resizeMode: 'stretch',
-                marginRight: 5,
-              }}
-            />
-            <TextInput
-              placeholder="username"
-              style={{flex: 1, paddingVertical: 0, color: COLORS.main}}
-              value={username}
-              onChangeText={txt => setUserName(txt)}
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              borderBottomColor: '#ccc',
-              borderBottomWidth: 1,
-              paddingBottom: 8,
-              marginBottom: 25,
-            }}>
-            <Image
-              source={require('../../assets/password.png')}
-              style={{
-                height: 20,
-                width: 20,
-                resizeMode: 'stretch',
-                marginRight: 5,
-              }}
-            />
-            <TextInput
-              placeholder="password"
-              style={{flex: 1, paddingVertical: 0, color: COLORS.main}}
-              secureTextEntry={!seePassword}
-              value={password}
-              onChangeText={pass => setPassword(pass)}
-            />
-            <TouchableOpacity
-              onPress={() => {
-                setSeePassword(state => !state);
-              }}>
-              {seePassword ? (
-                <Image
-                  source={require('../../assets/eye-on.png')}
-                  style={{
-                    height: 20,
-                    width: 20,
-                    resizeMode: 'stretch',
-                    marginRight: 5,
-                  }}
-                />
-              ) : (
-                <Image
-                  source={require('../../assets/eye-off.png')}
-                  style={{
-                    height: 20,
-                    width: 20,
-                    resizeMode: 'stretch',
-                    marginRight: 5,
-                  }}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({field: {onChange, onBlur, value}}) => (
+              <InputField
+                label="Phone"
+                placeholder="01XXXXXXXXX"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="username"
+          />
+          {errors.username && (
+            <Text style={styles.errorMessage}>This is required.</Text>
+          )}
+
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({field: {onChange, onBlur, value}}) => (
+              <InputField
+                placeholder="password"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                label="Password"
+                isPassword
+                togglePasswordVisibility={isVisible =>
+                  console.log('Password visibility:', isVisible)
+                }
+              />
+            )}
+            name="password"
+          />
+          {errors.password && (
+            <Text style={styles.errorMessage}>This is required.</Text>
+          )}
         </KeyboardAvoidingView>
       </View>
       {/*buttons */}
@@ -188,7 +153,7 @@ const LoginScreen = ({navigation}) => {
           }}
           text="Forget?"
         />
-        <MainActionButton pressHandler={handleSubmitPress} text="Login" />
+        <MainActionButton pressHandler={handleSubmit(onSubmit)} text="Login" />
       </View>
       <View
         style={{
@@ -209,4 +174,11 @@ const LoginScreen = ({navigation}) => {
 };
 export default LoginScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  errorMessage: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 5,
+    paddingHorizontal: 10,
+  },
+});

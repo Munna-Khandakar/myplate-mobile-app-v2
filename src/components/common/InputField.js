@@ -1,11 +1,57 @@
-import {StyleSheet, Text, TextInput, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 
-const InputField = ({label, error = false, errorMessage = '', ...rest}) => {
+const InputField = ({
+  label,
+  error = false,
+  errorMessage = '',
+  isPassword = false,
+  togglePasswordVisibility = null,
+  ...rest
+}) => {
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const handlePasswordVisibilityToggle = () => {
+    setIsPasswordVisible(prev => !prev);
+    if (togglePasswordVisibility) {
+      togglePasswordVisibility(isPasswordVisible);
+    }
+  };
+
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput style={styles.textInput} {...rest} />
+      <View style={{position: 'relative'}}>
+        <TextInput
+          style={styles.textInput}
+          secureTextEntry={isPassword && !isPasswordVisible}
+          {...rest}
+        />
+        {isPassword && (
+          <TouchableOpacity
+            style={styles.passwordToggle}
+            onPress={handlePasswordVisibilityToggle}>
+            {isPasswordVisible ? (
+              <Image
+                source={require('../../assets/eye-on.png')}
+                style={styles.eyeIcon}
+              />
+            ) : (
+              <Image
+                source={require('../../assets/eye-off.png')}
+                style={styles.eyeIcon}
+              />
+            )}
+          </TouchableOpacity>
+        )}
+      </View>
       {error && <Text style={styles.errorMessage}>{errorMessage}</Text>}
     </View>
   );
@@ -33,5 +79,14 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 12,
     marginTop: 5,
+  },
+  eyeIcon: {
+    height: 20,
+    width: 20,
+    resizeMode: 'stretch',
+    marginRight: 5,
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
   },
 });
