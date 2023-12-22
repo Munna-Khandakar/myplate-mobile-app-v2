@@ -37,11 +37,11 @@ const VideoScreen = () => {
   } else {
     return (
       <ScrollView>
-        {tutorialLists?.map((tutorial, index) => {
+        {/* {tutorialLists?.map((tutorial, index) => {
           let youtubeId = tutorial?.video_link.split('/')[4]; // taking only the id
           console.log(youtubeId);
           return <YoutubePlayerCard youtubeId={youtubeId} key={index} />;
-        })}
+        })} */}
       </ScrollView>
     );
   }

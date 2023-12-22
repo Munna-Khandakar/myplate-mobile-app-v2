@@ -1,37 +1,29 @@
-import React, {useState, createRef, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
-  TextInput,
   View,
   Text,
-  ScrollView,
   SafeAreaView,
   Image,
-  Keyboard,
   TouchableOpacity,
   KeyboardAvoidingView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {userLogin} from '../../requests/auth';
 import Toast from 'react-native-toast-message';
-import useAuthStore from '../../stores/authStore';
-import COLORS from '../../utils/Colors';
+import {useForm, Controller} from 'react-hook-form';
+import axios from 'axios';
 import SecondaryActionButton from '../../components/SecondaryActionButton';
 import MainActionButton from '../../components/MainActionButton';
-import {useForm, Controller} from 'react-hook-form';
+import useAuthStore from '../../stores/authStore';
+import COLORS from '../../utils/Colors';
 import InputField from '../../components/common/InputField';
-import api from './../../requests/api';
-import axios from 'axios';
 import {API_URL} from '../../utils/Requests';
 
 const LoginScreen = ({navigation}) => {
-  const [username, setUserName] = useState('01794807577');
-  const [password, setPassword] = useState('11111111');
   const storeUserToken = useAuthStore(state => state.storeUserToken);
 
   const {
     control,
-    setValue,
     handleSubmit,
     reset,
     formState: {errors},
@@ -41,14 +33,6 @@ const LoginScreen = ({navigation}) => {
       password: '',
     },
   });
-
-  useEffect(() => {
-    AsyncStorage.getItem('user_token').then(value => {
-      if (value) {
-        storeUserToken(value);
-      }
-    });
-  }, []);
 
   const showToast = (type, text1, text2) => {
     Toast.show({
