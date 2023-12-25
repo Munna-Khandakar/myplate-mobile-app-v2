@@ -1,19 +1,9 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ActivityIndicator,
-  FlatList,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, View, Image, FlatList} from 'react-native';
+import React, {useEffect} from 'react';
 import CategoriesCarousel from '../../components/CategoriesCarousel';
 import PostCard from '../../components/PostCard';
-import {COLORS} from '../../utils/Colors';
 import usePlateStore from '../../stores/plateStore';
-import {getInitialPlates} from '../../requests/plates';
 import axios from 'axios';
-const STYLES = ['default', 'dark-content', 'light-content'];
 
 const HomeScreen = () => {
   const plates = usePlateStore(state => state.plates);

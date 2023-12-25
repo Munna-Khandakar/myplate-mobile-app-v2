@@ -1,12 +1,5 @@
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useEffect} from 'react';
+import {Image, ScrollView, StyleSheet, View} from 'react-native';
+import React from 'react';
 import {COLORS} from '../../utils/Colors';
 import {useNavigation} from '@react-navigation/native';
 import MainActionButton from '../../components/MainActionButton';
@@ -18,7 +11,6 @@ import ProfileCard from '../../components/MenuScreen/ProfileCard';
 const MenuScreen = () => {
   const navigation = useNavigation();
   const storeLogoutHandler = useAuthStore(state => state.logout);
-  const user = useAuthStore(state => state.user);
 
   // logout
   const logoutHandler = () => {

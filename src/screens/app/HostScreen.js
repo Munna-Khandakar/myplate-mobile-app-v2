@@ -1,19 +1,32 @@
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, View, Text, Image} from 'react-native';
-import React, {useState} from 'react';
+import Toast from 'react-native-toast-message';
+import {useForm} from 'react-hook-form';
 import Screen1 from './HostScreens/Screen1';
 import Screen2 from './HostScreens/Screen2';
 import Screen3 from './HostScreens/Screen3';
 import Screen4 from './HostScreens/Screen4';
-import Toast from 'react-native-toast-message';
 import HostCarousel from './HostScreens/HostCarousel';
 import {COLORS} from '../../utils/Colors';
 import SecondaryActionButton from '../../components/SecondaryActionButton';
 import MainActionButton from '../../components/MainActionButton';
+import {getCategory} from '../../requests/category';
 
 const HostScreen = () => {
   const [screen, setScreen] = useState(0);
   const [canOrderAnyTime, setCanOrderAnyTime] = useState(false);
   const [haveOwnDeliverySystem, setHaveOwnDeliverySystem] = useState(false);
+  const [category, setCategory] = useState([]);
+
+  useEffect(() => {
+    async function fetchCategory() {
+      const data = await getCategory();
+      setCategory(data);
+    }
+
+    fetchCategory();
+  }, []);
+
   const nextScreen = () => {
     setScreen(s => s + 1);
   };
@@ -27,8 +40,13 @@ const HostScreen = () => {
       text2: text2,
     });
   };
+  const form = useForm({});
+  const {watch} = form;
+
+  console.log('from HS==>', watch());
+
   const Screens = () => {
-    if (screen == 0) return <HostCarousel />;
+    if (screen == 0) return <HostCarousel form={form} category={category} />;
     if (screen == 1)
       return <Screen1 nextScreen={nextScreen} prevScreen={prevScreen} />;
     if (screen == 2)
