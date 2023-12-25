@@ -44,7 +44,7 @@ const LoginScreen = ({navigation}) => {
 
   const onSubmit = async data => {
     try {
-      const res = await axios.post(`${API_URL}/login`, data);
+      const res = await axios.post(`/login`, data);
       if (res.statusCode !== 201) {
         return showToast('error', res.error, res.message);
       }

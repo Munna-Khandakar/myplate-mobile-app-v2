@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import App from './App';
 import {name as appName} from './app.json';
 
-const API_URL = 'http://192.168.0.120:3000/api';
+const API_URL = 'http://localhost:3000/api';
 
 // Check for token and set authorization header conditionally
 AsyncStorage.getItem('user_token')
@@ -13,7 +13,7 @@ AsyncStorage.getItem('user_token')
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
       //redirect to login
-      console.warn('Token not found in storage');
+      console.warn('index.js => Token not found in storage');
     }
   })
   .catch(error => {
@@ -24,6 +24,7 @@ axios.defaults.baseURL = API_URL;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 axios.interceptors.request.use(request => {
+  console.log(request);
   return request;
 });
 axios.interceptors.response.use(

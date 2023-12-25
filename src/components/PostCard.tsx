@@ -11,8 +11,13 @@ import {COLORS} from '../utils/Colors';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import OrderBottomSheet from './OrderBottomSheet';
 import {Blurhash} from 'react-native-blurhash';
+import {PlateType} from 'types/Plate';
 
-const PostCard = ({plate}) => {
+type PostCardProps = {
+  plate: PlateType;
+};
+const PostCard = (props: PostCardProps) => {
+  const {plate} = props;
   const refRBSheet = useRef();
   //console.log(plate);
   return (
@@ -78,21 +83,24 @@ const PostCard = ({plate}) => {
       <View style={styles.PostCardDescriptionContainer}>
         <Text style={styles.PostCardDescription}>{plate?.description}</Text>
       </View>
-      <View style={styles.PostCardImageContainer}>
-        {plate?.plate_images[0] ? (
-          <Image
-            style={styles.PostCardImage}
-            source={{
-              uri: plate?.plate_images[0],
-            }}
-          />
-        ) : (
-          <Blurhash
-            blurhash="LGFFaXYk^6#M@-5c,1J5@[or[Q6."
-            style={styles.PostCardImage}
-          />
-        )}
-      </View>
+      {plate?.plate_images && plate?.plate_images.length > 0 && (
+        <View style={styles.PostCardImageContainer}>
+          {plate?.plate_images[0] ? (
+            <Image
+              style={styles.PostCardImage}
+              source={{
+                uri: plate?.plate_images[0],
+              }}
+            />
+          ) : (
+            <Blurhash
+              blurhash="LGFFaXYk^6#M@-5c,1J5@[or[Q6."
+              style={styles.PostCardImage}
+            />
+          )}
+        </View>
+      )}
+
       <View style={styles.PostCardButtonContainer}>
         <TouchableOpacity
           style={styles.PostCardButton}
