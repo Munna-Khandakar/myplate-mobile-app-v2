@@ -1,19 +1,37 @@
-import {StyleSheet, Text, View, Image, TextInput} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  KeyboardTypeOptions,
+} from 'react-native';
 import React from 'react';
 import {COLORS} from '../utils/Colors';
 
-const CustomeInputFiled = ({icon, text, action, keyborardType, value}) => {
+type CustomeInputFiledProps = {
+  icon: string;
+  text: string;
+  action?: () => void;
+  value: string;
+};
+const CustomeInputFiled = (props: CustomeInputFiledProps) => {
+  const {icon, text, action, value} = props;
+  const image = React.useMemo(
+    () => require('./../assets/icons/food-name.png'),
+    [icon],
+  );
+
   return (
     <View style={styles.inputContainer}>
       <View style={styles.iconContainer}>
-        <Image source={icon} style={{height: 25, width: 25}} />
+        <Image source={image} style={{height: 25, width: 25}} />
       </View>
       <TextInput
         style={styles.inputStyle}
         placeholder={text}
         placeholderTextColor={COLORS.main}
         selectionColor={COLORS.main}
-        keyboardType={keyborardType ? keyborardType : 'default'}
         onChangeText={action}
         value={value}
       />

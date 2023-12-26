@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -17,7 +17,6 @@ import MainActionButton from '../../components/MainActionButton';
 import useAuthStore from '../../stores/authStore';
 import COLORS from '../../utils/Colors';
 import InputField from '../../components/common/InputField';
-import {API_URL} from '../../utils/Requests';
 
 const LoginScreen = ({navigation}) => {
   const storeUserToken = useAuthStore(state => state.storeUserToken);
@@ -25,7 +24,7 @@ const LoginScreen = ({navigation}) => {
   const {
     control,
     handleSubmit,
-    reset,
+
     formState: {errors},
   } = useForm({
     defaultValues: {

@@ -1,20 +1,14 @@
-import React, {useState, createRef, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
-  StyleSheet,
   TextInput,
   View,
   Text,
-  ScrollView,
   SafeAreaView,
   Image,
-  Keyboard,
   TouchableOpacity,
   KeyboardAvoidingView,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {userLogin} from '../../requests/auth';
 import Toast from 'react-native-toast-message';
-import useAuthStore from '../../stores/authStore';
 import COLORS from '../../utils/Colors';
 import SecondaryActionButton from '../../components/SecondaryActionButton';
 import MainActionButton from '../../components/MainActionButton';
