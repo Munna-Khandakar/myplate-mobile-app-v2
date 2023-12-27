@@ -45,6 +45,13 @@ const MenuScreen = () => {
           icon={require('../../assets/icons/customer-order.png')}
           pressHandler={() => navigation.navigate('Customerorders')}
         />
+
+        <MenuItem
+          title={'My Addresses'}
+          subTitle={'Add and select your address'}
+          icon={require('../../assets/icons/location.png')}
+          pressHandler={() => navigation.navigate('MyAddress')}
+        />
       </ScrollView>
 
       <View style={{flexDirection: 'row', width: '100%', marginBottom: 15}}>

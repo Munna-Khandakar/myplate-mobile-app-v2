@@ -8,7 +8,6 @@ import {
 import React from 'react';
 import {CategoryItemType} from '../../../types/CategoryItemType';
 import {COLORS} from '../../../utils/Colors';
-import {UseFormSetValue} from 'react-hook-form';
 
 type CategoryItemProps = {
   selected?: boolean;
@@ -16,7 +15,7 @@ type CategoryItemProps = {
 };
 const windowWidth = Dimensions.get('window').width;
 
-const CategoryItem = (props: any) => {
+const CategoryItem = (props: CategoryItemProps) => {
   const {selected, item, ...rest} = props;
 
   return (

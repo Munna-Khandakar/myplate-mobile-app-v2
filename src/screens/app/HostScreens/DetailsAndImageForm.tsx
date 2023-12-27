@@ -15,9 +15,12 @@ type DetailsAndImageFormTypes = {
   form: UseFormReturn<FieldValues, any, undefined>;
 };
 
+const IMG =
+  'https://pinchofyum.com/wp-content/uploads/2014/07/poached-egg-toast-5.jpg';
+
 export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
   const {form} = props;
-  const {control} = form;
+  const {control, setValue, watch} = form;
 
   return (
     <View>
@@ -64,10 +67,27 @@ export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
         title={`Upload Image`}
         subtitle={`Don't upload any downloaded image`}
       />
+
+      {watch('image') && (
+        <View style={{marginBottom: 10, marginLeft: 10}}>
+          <Image
+            source={{uri: watch('image')[0]}}
+            style={{
+              height: 150,
+              width: 200,
+              borderRadius: 10,
+            }}
+          />
+        </View>
+      )}
+
       <TouchableOpacity
         style={{
           alignItems: 'center',
           marginBottom: 10,
+        }}
+        onPress={() => {
+          setValue('image', [IMG]);
         }}>
         <View
           style={{
@@ -89,7 +109,7 @@ export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
               fontSize: 15,
               fontWeight: 'bold',
             }}>
-            Upload
+            {watch('image') ? 'Change' : 'Upload'}
           </Text>
         </View>
       </TouchableOpacity>
