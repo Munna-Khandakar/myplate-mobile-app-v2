@@ -60,6 +60,7 @@ const TabNavigationStack = () => {
               style={[styles.navItem, {borderRadius: focused ? 50 : 0}]}
             />
           ),
+          unmountOnBlur: true,
         }}
       />
       <Tab.Screen

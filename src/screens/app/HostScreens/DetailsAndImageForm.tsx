@@ -9,10 +9,11 @@ import {
 import React from 'react';
 import {COLORS} from '../../../utils/Colors';
 import TitleWithSubtitle from '../../../components/TitleWithSubtitle';
-import {Controller, FieldValues, UseFormReturn} from 'react-hook-form';
+import {Controller, UseFormReturn} from 'react-hook-form';
+import {HostPlateType} from '../../../types/HostPlateType';
 
 type DetailsAndImageFormTypes = {
-  form: UseFormReturn<FieldValues, any, undefined>;
+  form: UseFormReturn<HostPlateType, any, undefined>;
 };
 
 const IMG =
@@ -21,6 +22,7 @@ const IMG =
 export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
   const {form} = props;
   const {control, setValue, watch} = form;
+  const hasImag = watch('image')[0];
 
   return (
     <View>
@@ -68,7 +70,7 @@ export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
         subtitle={`Don't upload any downloaded image`}
       />
 
-      {watch('image') && (
+      {hasImag !== '' && (
         <View style={{marginBottom: 10, marginLeft: 10}}>
           <Image
             source={{uri: watch('image')[0]}}

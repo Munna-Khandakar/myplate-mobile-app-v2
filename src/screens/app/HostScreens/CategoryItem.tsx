@@ -12,11 +12,12 @@ import {COLORS} from '../../../utils/Colors';
 type CategoryItemProps = {
   selected?: boolean;
   item: CategoryItemType;
+  onPress: () => void;
 };
 const windowWidth = Dimensions.get('window').width;
 
 const CategoryItem = (props: CategoryItemProps) => {
-  const {selected, item, ...rest} = props;
+  const {selected, item, onPress, ...rest} = props;
 
   return (
     <TouchableOpacity
@@ -26,6 +27,7 @@ const CategoryItem = (props: CategoryItemProps) => {
           borderColor: `${selected ? COLORS.main : COLORS.tranparenSecondary}`,
         },
       ]}
+      onPress={onPress}
       {...rest}>
       <Image
         source={require('./../../../assets/icons/nachos.png')}

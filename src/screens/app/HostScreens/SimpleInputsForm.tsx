@@ -9,9 +9,10 @@ import {
 import React from 'react';
 import {COLORS} from '../../../utils/Colors';
 import {Controller, FieldValues, UseFormReturn} from 'react-hook-form';
+import {HostPlateType} from '../../../types/HostPlateType';
 
 type SimpleInputsFormTypes = {
-  form: UseFormReturn<FieldValues, any, undefined>;
+  form: UseFormReturn<HostPlateType, any, undefined>;
 };
 
 export const SimpleInputsForm = (props: SimpleInputsFormTypes) => {

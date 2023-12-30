@@ -1,5 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Text, Image, ImageSourcePropType} from 'react-native';
+import React, {Fragment, useEffect, useState} from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  ImageSourcePropType,
+  Button,
+} from 'react-native';
 import Toast from 'react-native-toast-message';
 import {useForm} from 'react-hook-form';
 import Screen3 from './HostScreens/Screen3';
@@ -11,6 +18,10 @@ import MainActionButton from '../../components/MainActionButton';
 import {getCategory} from '../../requests/category';
 import {SimpleInputsForm} from './HostScreens/SimpleInputsForm';
 import {DetailsAndImageForm} from './HostScreens/DetailsAndImageForm';
+import {
+  HOST_PLATE_DEFAULT_VALUES,
+  HostPlateType,
+} from '../../types/HostPlateType';
 
 interface DataItem {
   text: string;
@@ -50,21 +61,6 @@ const HostScreen = () => {
   const [screen, setScreen] = useState(0);
   const [category, setCategory] = useState([]);
 
-  useEffect(() => {
-    async function fetchCategory() {
-      const data = await getCategory();
-      setCategory(data);
-    }
-
-    fetchCategory();
-  }, []);
-
-  const nextScreen = () => {
-    setScreen(s => s + 1);
-  };
-  const prevScreen = () => {
-    setScreen(s => s - 1);
-  };
   const showToast = (type: string, text1: string, text2: string) => {
     Toast.show({
       type: type,
@@ -72,10 +68,44 @@ const HostScreen = () => {
       text2: text2,
     });
   };
-  const form = useForm({});
-  const {watch} = form;
+  const form = useForm<HostPlateType>({
+    defaultValues: HOST_PLATE_DEFAULT_VALUES,
+    mode: 'all',
+  });
+  const {
+    trigger,
+    watch,
+    setValue,
+    handleSubmit,
+    formState: {errors},
+  } = form;
 
-  console.log('from HS==>', watch());
+  useEffect(() => {
+    async function fetchCategory() {
+      const data = await getCategory();
+      if (data.length > 0) {
+        setValue('category', data[0]._id);
+        setCategory(data);
+      }
+    }
+    fetchCategory();
+  }, []);
+
+  const onSubmit = (data: HostPlateType) => {
+    console.log('hi');
+    console.log(data);
+  };
+  console.log('erorrs =>', errors);
+
+  const nextScreen = () => {
+    trigger();
+    setScreen(s => s + 1);
+  };
+  const prevScreen = () => {
+    setScreen(s => s - 1);
+  };
+
+  // console.log('from HS==>', watch());
 
   const renderScreen = () => {
     if (screen == 0) return <HostCarousel form={form} category={category} />;
@@ -83,6 +113,22 @@ const HostScreen = () => {
     if (screen == 2) return <DetailsAndImageForm form={form} />;
     if (screen == 3) return <Screen3 />;
     if (screen == 4) return <Screen4 />;
+  };
+
+  const renderS = () => {
+    return (
+      <Fragment>
+        <View style={screen == 0 ? {} : styles.hidden}>
+          <HostCarousel form={form} category={category} />
+        </View>
+        <View style={screen == 1 ? {} : styles.hidden}>
+          <SimpleInputsForm form={form} />
+        </View>
+        <View style={screen == 2 ? {} : styles.hidden}>
+          <DetailsAndImageForm form={form} />
+        </View>
+      </Fragment>
+    );
   };
 
   const renderBanner = () => {
@@ -104,7 +150,7 @@ const HostScreen = () => {
         }}>
         <View>
           {renderBanner()}
-          {renderScreen()}
+          {renderS()}
         </View>
         <View
           style={{
@@ -141,5 +187,10 @@ const styles = StyleSheet.create({
     width: 100,
     flex: 1,
     resizeMode: 'contain',
+  },
+  hidden: {
+    opacity: 0,
+    width: 0,
+    height: 0,
   },
 });
