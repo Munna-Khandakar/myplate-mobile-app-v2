@@ -1,33 +1,38 @@
 import {Controller, useForm} from 'react-hook-form';
 import {StyleSheet, Text, View} from 'react-native';
-import {Fragment} from 'react';
+import {Fragment, useEffect} from 'react';
 import InputField from './common/InputField';
 import MainActionButton from './MainActionButton';
 import SecondaryActionButton from './SecondaryActionButton';
 import {
   AddressFormInputs,
+  AddressType,
   DEFAULT_ADDRESS_FORM_VALUES,
 } from '../types/AddressType';
 
 type AddressFromProps = {
   onFormSubmit: (data: AddressFormInputs) => void;
   closeForm: () => void;
+  data?: AddressType;
 };
 export const AddressForm = (props: AddressFromProps) => {
-  const {onFormSubmit, closeForm} = props;
+  const {onFormSubmit, closeForm, data} = props;
 
   const {
     control,
     handleSubmit,
-    watch,
-    trigger,
+    reset,
     formState: {errors},
   } = useForm<AddressFormInputs>({
     defaultValues: DEFAULT_ADDRESS_FORM_VALUES,
     mode: 'all',
   });
-  console.log('===>', errors);
-  console.log(watch());
+
+  useEffect(() => {
+    if (data) {
+      reset(data);
+    }
+  }, [data]);
 
   return (
     <Fragment>

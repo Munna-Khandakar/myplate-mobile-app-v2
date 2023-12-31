@@ -24,12 +24,11 @@ const LoginScreen = ({navigation}) => {
   const {
     control,
     handleSubmit,
-
     formState: {errors},
   } = useForm({
     defaultValues: {
-      username: '',
-      password: '',
+      username: 'user01@gmail.com',
+      password: '1234',
     },
   });
 

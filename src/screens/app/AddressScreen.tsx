@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,9 +8,11 @@ import {
   ImageSourcePropType,
   Image,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
+import useSWR from 'swr';
 import {COLORS} from '../../utils/Colors';
 import {getAddress} from '../../requests/address';
 import {AddressFormInputs, AddressType} from '../../types/AddressType';
@@ -19,24 +21,18 @@ import {AddressForm} from '../../components/AddressForm';
 
 const editIcon: ImageSourcePropType = require('./../../assets/icons/edit.png');
 const deleteIcon: ImageSourcePropType = require('./../../assets/icons/delete.png');
+const plusIcon: ImageSourcePropType = require('./../../assets/icons/plus.png');
+const backIcon: ImageSourcePropType = require('./../../assets/icons/back.png');
 
-const AddressScreen = () => {
-  const [addresses, setAddresses] = useState<AddressType[]>([]);
-  const [selectedAddress, setSelectedAddress] = useState('');
+const AddressScreen = ({navigation}: {navigation: any}) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState<AddressType>();
 
-  useEffect(() => {
-    async function fetchAddress() {
-      const data = await getAddress();
-      setAddresses(data);
-    }
-
-    fetchAddress();
-  }, []);
-
-  const handleAddressSelect = (addressId: string) => {
-    setSelectedAddress(addressId);
-  };
+  const {data, error, isLoading, mutate} = useSWR<AddressType[]>(
+    'address',
+    getAddress,
+  );
 
   const showToast = (type: string, text1: string, text2: string) => {
     Toast.show({
@@ -46,8 +42,9 @@ const AddressScreen = () => {
     });
   };
 
-  const handleEditPress = (addressId: string) => {
-    setModalVisible(true);
+  const handleEditPress = (address: AddressType) => {
+    setSelectedAddress(address);
+    setOpenEditModal(true);
   };
 
   const showDeleteAlert = (addressId: string) =>
@@ -64,6 +61,7 @@ const AddressScreen = () => {
     try {
       const res: any = await axios.delete(`/address/${addressId}`);
       showToast('success', res.message, 'Address Removed');
+      mutate();
     } catch (error: any) {
       showToast('error', error.error, error.message);
     }
@@ -74,6 +72,7 @@ const AddressScreen = () => {
       const res: any = await axios.post(`/address`, data);
       if (res.statusCode == 201) {
         showToast('success', res.message, 'Address Added');
+        mutate();
       }
     } catch (error: any) {
       showToast('error', error.error, error.message);
@@ -81,35 +80,80 @@ const AddressScreen = () => {
     setModalVisible(false);
   };
 
+  const onEditFormSubmit = async (data: AddressFormInputs) => {
+    try {
+      const res: any = await axios.put(
+        `/address/${selectedAddress?._id}`,
+        data,
+      );
+      showToast('success', res.message, 'Address Saved');
+      mutate();
+    } catch (error: any) {
+      showToast('error', error.error, error.message);
+    }
+    setOpenEditModal(false);
+  };
+
+  if (error)
+    return (
+      <View>
+        <Text>failed to load</Text>
+      </View>
+    );
+  if (isLoading) {
+    return (
+      <View>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={{padding: 10}}>
-        <Text style={{fontSize: 20, fontWeight: 'bold', color: COLORS.main}}>
-          Your Address
-        </Text>
-        <Text style={{color: COLORS.main}}>click to add a new address</Text>
-        <Text style={{alignSelf: 'flex-end'}}>+</Text>
+      <View
+        style={{
+          padding: 10,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{marginEnd: 15}}>
+            <Image
+              source={backIcon}
+              style={{height: 20, width: 20, resizeMode: 'contain'}}
+            />
+          </TouchableOpacity>
+          <View>
+            <Text
+              style={{fontSize: 20, fontWeight: 'bold', color: COLORS.main}}>
+              Your Address
+            </Text>
+            <Text style={{color: COLORS.main}}>click to add a new address</Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          style={styles.button}>
+          <Image
+            source={plusIcon}
+            style={{height: 20, width: 20, resizeMode: 'contain'}}
+          />
+        </TouchableOpacity>
       </View>
-      {addresses &&
-        addresses.map(address => (
-          <View
-            key={address._id}
-            style={[
-              styles.addressCardContainer,
-              selectedAddress === address._id && styles.selected,
-            ]}>
-            <TouchableOpacity
-              onPress={() => {
-                handleAddressSelect(address._id);
-              }}
-              style={[styles.addressCard]}>
+      {data &&
+        data.map(address => (
+          <View key={address._id} style={styles.addressCardContainer}>
+            <View style={[styles.addressCard]}>
               <Text style={styles.title}>{address.title}</Text>
               <Text>{address.description}</Text>
-            </TouchableOpacity>
+            </View>
             <View style={{flexDirection: 'row'}}>
               <TouchableOpacity
-                onPress={() => handleEditPress(address._id)}
-                style={styles.editButton}>
+                onPress={() => handleEditPress(address)}
+                style={styles.button}>
                 <Image
                   source={editIcon}
                   style={{height: 20, width: 20, resizeMode: 'contain'}}
@@ -117,7 +161,7 @@ const AddressScreen = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => showDeleteAlert(address._id)}
-                style={styles.editButton}>
+                style={styles.button}>
                 <Image
                   source={deleteIcon}
                   style={{height: 20, width: 20, resizeMode: 'contain'}}
@@ -126,7 +170,6 @@ const AddressScreen = () => {
             </View>
           </View>
         ))}
-
       <CustomModal
         onClose={() => {
           setModalVisible(false);
@@ -135,6 +178,17 @@ const AddressScreen = () => {
         <AddressForm
           onFormSubmit={onFormSubmit}
           closeForm={() => setModalVisible(false)}
+        />
+      </CustomModal>
+      <CustomModal
+        onClose={() => {
+          setOpenEditModal(false);
+        }}
+        isOpen={openEditModal}>
+        <AddressForm
+          data={selectedAddress}
+          onFormSubmit={onEditFormSubmit}
+          closeForm={() => setOpenEditModal(false)}
         />
       </CustomModal>
     </ScrollView>
@@ -157,12 +211,13 @@ const styles = StyleSheet.create({
   addressCard: {
     flex: 1,
   },
-  editButton: {
+  button: {
     marginLeft: 5,
     padding: 5,
     borderRadius: 3,
     marginStart: 10,
   },
+
   title: {
     fontWeight: 'bold',
     marginBottom: 5,
