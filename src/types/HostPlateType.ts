@@ -1,3 +1,5 @@
+import {AddressType} from './AddressType';
+
 export type HostPlateType = {
   category: string;
   title: string;
@@ -5,6 +7,7 @@ export type HostPlateType = {
   quantity: number;
   image: string[];
   description: string;
+  address: AddressType;
 };
 
 export const HOST_PLATE_DEFAULT_VALUES = {
@@ -14,4 +17,5 @@ export const HOST_PLATE_DEFAULT_VALUES = {
   quantity: 1,
   image: [],
   description: '',
+  address: {},
 };

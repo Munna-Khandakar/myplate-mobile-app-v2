@@ -1,13 +1,20 @@
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {COLORS} from '../../../utils/Colors';
-import MainActionButton from '../../../components/MainActionButton';
-import SecondaryActionButton from '../../../components/SecondaryActionButton';
 import TitleWithSubtitle from '../../../components/TitleWithSubtitle';
 import DatePicker from 'react-native-date-picker';
 import usePlateStore from '../../../stores/plateStore';
+import {HostPlateType} from '../../../types/HostPlateType';
+import {UseFormReturn} from 'react-hook-form';
 
-const Screen4 = () => {
+type DateScreenProps = {
+  form: UseFormReturn<HostPlateType, any, undefined>;
+};
+
+const Screen4 = (props: DateScreenProps) => {
+  const {form} = props;
+  const {setValue, watch, control} = form;
+
   const [date, setDate] = useState(new Date());
   const newPlate = usePlateStore(state => state.newPlate);
   const storeNewPlate = usePlateStore(state => state.storeNewPlate);

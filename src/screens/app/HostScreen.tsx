@@ -105,16 +105,6 @@ const HostScreen = () => {
     setScreen(s => s - 1);
   };
 
-  // console.log('from HS==>', watch());
-
-  const renderScreen = () => {
-    if (screen == 0) return <HostCarousel form={form} category={category} />;
-    if (screen == 1) return <SimpleInputsForm form={form} />;
-    if (screen == 2) return <DetailsAndImageForm form={form} />;
-    if (screen == 3) return <Screen3 />;
-    if (screen == 4) return <Screen4 />;
-  };
-
   const renderS = () => {
     return (
       <Fragment>
@@ -126,6 +116,12 @@ const HostScreen = () => {
         </View>
         <View style={screen == 2 ? {} : styles.hidden}>
           <DetailsAndImageForm form={form} />
+        </View>
+        <View style={screen == 3 ? {} : styles.hidden}>
+          <Screen3 form={form} />
+        </View>
+        <View style={screen == 4 ? {} : styles.hidden}>
+          <Screen4 form={form} />
         </View>
       </Fragment>
     );

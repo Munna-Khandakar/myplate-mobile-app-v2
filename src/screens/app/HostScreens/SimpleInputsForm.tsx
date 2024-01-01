@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,10 +7,11 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import React from 'react';
+import {Controller, UseFormReturn} from 'react-hook-form';
 import {COLORS} from '../../../utils/Colors';
-import {Controller, FieldValues, UseFormReturn} from 'react-hook-form';
 import {HostPlateType} from '../../../types/HostPlateType';
+
+const MIN_PRICE = 1;
 
 type SimpleInputsFormTypes = {
   form: UseFormReturn<HostPlateType, any, undefined>;
@@ -34,16 +36,26 @@ export const SimpleInputsForm = (props: SimpleInputsFormTypes) => {
           rules={{
             required: {value: true, message: 'Please Enter Plate Name'},
           }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              style={styles.inputStyle}
-              placeholder={'Enter Plate Name'}
-              placeholderTextColor={COLORS.main}
-              selectionColor={COLORS.main}
-              onChangeText={onChange}
-              value={value}
-              onBlur={onBlur}
-            />
+          render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
+            <View style={{width: '100%'}}>
+              <TextInput
+                style={[
+                  styles.inputStyle,
+                  {
+                    borderBottomColor: error
+                      ? 'red'
+                      : COLORS.tranparenSecondary,
+                  },
+                ]}
+                placeholder={'Enter Plate Name'}
+                placeholderTextColor={COLORS.main}
+                selectionColor={COLORS.main}
+                onChangeText={onChange}
+                value={value}
+                onBlur={onBlur}
+              />
+              {error && <Text style={{color: 'red'}}>{error.message}</Text>}
+            </View>
           )}
         />
       </View>
@@ -60,18 +72,29 @@ export const SimpleInputsForm = (props: SimpleInputsFormTypes) => {
           control={control}
           rules={{
             required: {value: true, message: 'Please Enter Price'},
+            min: {value: MIN_PRICE, message: 'Minimum value exceeded'},
           }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              style={styles.inputStyle}
-              placeholder={'Enter Per Plate Price'}
-              keyboardType="numeric"
-              placeholderTextColor={COLORS.main}
-              selectionColor={COLORS.main}
-              onChangeText={onChange}
-              value={value}
-              onBlur={onBlur}
-            />
+          render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
+            <View style={{width: '100%'}}>
+              <TextInput
+                style={[
+                  styles.inputStyle,
+                  {
+                    borderBottomColor: error
+                      ? 'red'
+                      : COLORS.tranparenSecondary,
+                  },
+                ]}
+                placeholder={'Enter Per Plate Price'}
+                keyboardType="numeric"
+                placeholderTextColor={COLORS.main}
+                selectionColor={COLORS.main}
+                onChangeText={onChange}
+                value={value}
+                onBlur={onBlur}
+              />
+              {error && <Text style={{color: 'red'}}>{error.message}</Text>}
+            </View>
           )}
         />
       </View>
@@ -164,7 +187,6 @@ const styles = StyleSheet.create({
   inputStyle: {
     width: '100%',
     height: 40,
-    borderBottomColor: COLORS.tranparenSecondary,
     borderBottomWidth: 1,
   },
   iconContainer: {

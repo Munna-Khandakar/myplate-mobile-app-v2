@@ -47,20 +47,23 @@ export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
           name={'description'}
           control={control}
           rules={{
-            required: {value: true, message: 'Please Enter Plate Name'},
+            required: {value: true, message: 'Please add some description'},
           }}
-          render={({field: {onChange, onBlur, value}}) => (
-            <TextInput
-              style={styles.inputStyle}
-              placeholder={'Enter Your Plate Description'}
-              placeholderTextColor={COLORS.main}
-              selectionColor={COLORS.main}
-              keyboardType="default"
-              multiline={true}
-              onChangeText={onChange}
-              value={value}
-              onBlur={onBlur}
-            />
+          render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
+            <View style={{width: '100%', minHeight: 150}}>
+              <TextInput
+                style={styles.inputStyle}
+                placeholder={'Enter Your Plate Description'}
+                placeholderTextColor={COLORS.main}
+                selectionColor={COLORS.main}
+                keyboardType="default"
+                multiline={true}
+                onChangeText={onChange}
+                value={value}
+                onBlur={onBlur}
+              />
+              {error && <Text style={{color: 'red'}}>{error.message}</Text>}
+            </View>
           )}
         />
       </View>
