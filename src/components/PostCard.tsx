@@ -1,29 +1,22 @@
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useRef} from 'react';
 import {COLORS} from '../utils/Colors';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import OrderBottomSheet from './OrderBottomSheet';
 import {Blurhash} from 'react-native-blurhash';
-import {PlateType} from 'types/Plate';
+import {HostPlateType} from '../types/HostPlateType';
 
 type PostCardProps = {
-  plate: PlateType;
+  plate: HostPlateType;
 };
 const PostCard = (props: PostCardProps) => {
   const {plate} = props;
-  const refRBSheet = useRef();
+  const refRBSheet = useRef<RBSheet | null>(null);
   //console.log(plate);
   return (
     <View style={styles.PostCardContainer}>
       <View style={styles.PostHeaderContainer}>
-        <Image
+        {/* <Image
           style={styles.userImage}
           source={
             !plate?.host_profile?.profile_image
@@ -32,7 +25,7 @@ const PostCard = (props: PostCardProps) => {
                   uri: plate?.host_profile?.profile_image,
                 }
           }
-        />
+        /> */}
         <View style={styles.PostTitleContainer}>
           <View
             style={{
@@ -40,7 +33,7 @@ const PostCard = (props: PostCardProps) => {
               alignItems: 'center',
               justifyContent: 'space-between',
             }}>
-            <Text style={styles.PostCardTitle}>{plate?.plate_name}</Text>
+            <Text style={styles.PostCardTitle}>{plate?.title}</Text>
             <Image
               source={require('../assets/icons/three-dot.png')}
               style={styles.threeDotIcon}
@@ -52,7 +45,7 @@ const PostCard = (props: PostCardProps) => {
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <Text style={{fontSize: 14, color: COLORS.secondary}}>
+            {/* <Text style={{fontSize: 14, color: COLORS.secondary}}>
               {plate?.postedBy?.name}
             </Text>
             {plate?.postedBy?.myCertification && (
@@ -60,7 +53,7 @@ const PostCard = (props: PostCardProps) => {
                 source={require('../assets/icons/verified.png')}
                 style={styles.verifiedIcon}
               />
-            )}
+            )} */}
           </View>
           <View
             style={{
@@ -83,7 +76,7 @@ const PostCard = (props: PostCardProps) => {
       <View style={styles.PostCardDescriptionContainer}>
         <Text style={styles.PostCardDescription}>{plate?.description}</Text>
       </View>
-      {plate?.plate_images && plate?.plate_images.length > 0 && (
+      {/* {plate?.plate_images && plate?.plate_images.length > 0 && (
         <View style={styles.PostCardImageContainer}>
           {plate?.plate_images[0] ? (
             <Image
@@ -99,12 +92,12 @@ const PostCard = (props: PostCardProps) => {
             />
           )}
         </View>
-      )}
+      )} */}
 
       <View style={styles.PostCardButtonContainer}>
         <TouchableOpacity
           style={styles.PostCardButton}
-          onPress={() => refRBSheet.current.open()}>
+          onPress={() => refRBSheet?.current?.open()}>
           <View>
             <Text
               style={{
@@ -128,7 +121,7 @@ const PostCard = (props: PostCardProps) => {
               paddingRight: 8,
               paddingTop: 5,
               paddingBottom: 5,
-              color: COLORS.main,
+              // color: COLORS.main,
               position: 'absolute',
               right: 0,
             }}>
@@ -140,8 +133,9 @@ const PostCard = (props: PostCardProps) => {
         </TouchableOpacity>
       </View>
 
+      {/* @ts-ignore */}
       <RBSheet
-        ref={refRBSheet}
+        ref={refRBSheet as any}
         closeOnDragDown={true}
         closeOnPressMask={true}
         animationType="slide"
@@ -167,15 +161,12 @@ export default PostCard;
 const styles = StyleSheet.create({
   PostCardContainer: {
     marginTop: 10,
-    // borderWidth: 1,
-    // borderColor: COLORS.tranparenSecondary,
     borderTopColor: COLORS.tranparenSecondary,
     borderTopWidth: 1,
     borderBottomColor: COLORS.tranparenSecondary,
     borderBottomWidth: 1,
     minHeight: 100,
     padding: 10,
-    // width: 100,
   },
   PostHeaderContainer: {
     flexDirection: 'row',
@@ -227,7 +218,6 @@ const styles = StyleSheet.create({
   },
   PostCardImage: {
     height: 300,
-    // width: 100,
     resizeMode: 'cover',
     borderRadius: 10,
   },

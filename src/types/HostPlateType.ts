@@ -8,6 +8,8 @@ export type HostPlateType = {
   image: string[];
   description: string;
   address: AddressType;
+  lastTimeToOrder: Date;
+  canOrderAnytime: boolean;
 };
 
 export const HOST_PLATE_DEFAULT_VALUES = {
@@ -18,4 +20,6 @@ export const HOST_PLATE_DEFAULT_VALUES = {
   image: [],
   description: '',
   address: {},
+  lastTimeToOrder: new Date(),
+  canOrderAnytime: false,
 };

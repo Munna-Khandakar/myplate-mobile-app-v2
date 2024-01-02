@@ -1,11 +1,10 @@
+import React from 'react';
 import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import {UseFormReturn} from 'react-hook-form';
+import DatePicker from 'react-native-date-picker';
 import {COLORS} from '../../../utils/Colors';
 import TitleWithSubtitle from '../../../components/TitleWithSubtitle';
-import DatePicker from 'react-native-date-picker';
-import usePlateStore from '../../../stores/plateStore';
 import {HostPlateType} from '../../../types/HostPlateType';
-import {UseFormReturn} from 'react-hook-form';
 
 type DateScreenProps = {
   form: UseFormReturn<HostPlateType, any, undefined>;
@@ -13,42 +12,33 @@ type DateScreenProps = {
 
 const Screen4 = (props: DateScreenProps) => {
   const {form} = props;
-  const {setValue, watch, control} = form;
-
-  const [date, setDate] = useState(new Date());
-  const newPlate = usePlateStore(state => state.newPlate);
-  const storeNewPlate = usePlateStore(state => state.storeNewPlate);
+  const {setValue, watch} = form;
 
   return (
     <View>
-      {/* time input section */}
-      {!newPlate?.all_time_available && (
+      {!watch('canOrderAnytime') && (
         <View>
           <TitleWithSubtitle
             title={`Last time to order`}
             subtitle={`After this time, no cleint can place order and you need to deliver your plate as early as possible after this time`}
           />
           <DatePicker
-            date={date}
-            onDateChange={setDate}
+            date={watch('lastTimeToOrder')}
+            onDateChange={(date: Date) => {
+              setValue('lastTimeToOrder', date);
+            }}
             androidVariant="nativeAndroid"
             textColor={COLORS.main}
           />
         </View>
       )}
 
-      {/* custom radio button */}
       <TouchableOpacity
         style={{margin: 10, flexDirection: 'row'}}
-        onPress={() =>
-          storeNewPlate({
-            ...newPlate,
-            all_time_available: !newPlate?.all_time_available,
-          })
-        }>
+        onPress={() => setValue('canOrderAnytime', !watch('canOrderAnytime'))}>
         <Image
           source={
-            newPlate?.all_time_available
+            watch('canOrderAnytime')
               ? require('../../../assets/icons/active/24-hours.png')
               : require('../../../assets/icons/24-hours.png')
           }
@@ -64,7 +54,7 @@ const Screen4 = (props: DateScreenProps) => {
           Can Order Any Time
         </Text>
       </TouchableOpacity>
-      {newPlate?.all_time_available && (
+      {watch('canOrderAnytime') && (
         <Text
           style={{
             color: COLORS.main,

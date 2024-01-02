@@ -22,6 +22,7 @@ import {
   HOST_PLATE_DEFAULT_VALUES,
   HostPlateType,
 } from '../../types/HostPlateType';
+import PostCard from '../../components/PostCard';
 
 interface DataItem {
   text: string;
@@ -59,6 +60,7 @@ const DATA_MAP: DataMap = {
 
 const HostScreen = () => {
   const [screen, setScreen] = useState(0);
+  const [showPreview, setShowPreview] = useState(false);
   const [category, setCategory] = useState([]);
 
   const showToast = (type: string, text1: string, text2: string) => {
@@ -98,11 +100,22 @@ const HostScreen = () => {
   console.log('erorrs =>', errors);
 
   const nextScreen = () => {
-    trigger();
+    // trigger();
+
+    if (screen == 4) {
+      // handleSubmit(onSubmit)();
+      // return;
+      setShowPreview(true);
+    }
     setScreen(s => s + 1);
   };
   const prevScreen = () => {
     setScreen(s => s - 1);
+  };
+
+  const renderPreviewScreen = () => {
+    const demoData = watch();
+    return <PostCard plate={demoData} />;
   };
 
   const renderS = () => {
@@ -147,6 +160,7 @@ const HostScreen = () => {
         <View>
           {renderBanner()}
           {renderS()}
+          {showPreview && renderPreviewScreen()}
         </View>
         <View
           style={{
