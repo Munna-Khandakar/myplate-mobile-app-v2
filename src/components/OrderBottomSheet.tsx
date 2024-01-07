@@ -1,12 +1,12 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {COLORS} from '../utils/Colors';
 import MainActionButton from './MainActionButton';
 import useCountryCode from '../hooks/useCountryCode';
 import {Blurhash} from 'react-native-blurhash';
-import useProfileStore from '../stores/profileStore';
 import {HostPlateType} from '../types/HostPlateType';
 import {UserType} from '../types/UserTypes';
+import AddressPicker from './common/AddressPicker';
 
 type OrderBottomSheetProps = {
   plate: HostPlateType;
@@ -15,14 +15,11 @@ type OrderBottomSheetProps = {
 
 const OrderBottomSheet = (props: OrderBottomSheetProps) => {
   const {plate, host} = props;
-
-  const myAddress = useProfileStore(state => state.myAddress);
   const deliveryCharge = 60;
   const countryCode = useCountryCode();
   const [plateAmount, setPlateAmount] = useState(1);
   const [plateCost, setPlateCost] = useState(0);
   const [maxPlateToOrder, setMaxPlateToOrder] = useState(plate?.quantity || 3);
-  const [selectedLocationId, setSelectedLocationId] = useState('1');
 
   const PlusButton = () => (
     <TouchableOpacity
@@ -73,46 +70,6 @@ const OrderBottomSheet = (props: OrderBottomSheetProps) => {
       </Text>
     </TouchableOpacity>
   );
-
-  // const LocationItem = ({id, icon, title, address, onPressHandler}) => {
-  //   return (
-  //     <TouchableOpacity
-  //       onPress={onPressHandler}
-  //       style={{
-  //         flexDirection: 'row',
-  //         alignItems: 'center',
-  //         marginBottom: 5,
-  //         borderRadius: 10,
-  //         padding: 10,
-  //         backgroundColor:
-  //           selectedLocationId == id ? COLORS.tranparenSecondary : 'white',
-  //         borderEndColor: COLORS.main,
-  //         borderEndWidth: selectedLocationId == id ? 1 : 0,
-  //       }}>
-  //       <Image source={icon} style={{height: 30, width: 30}} />
-  //       <View style={{marginLeft: 5}}>
-  //         <Text
-  //           style={{
-  //             color: COLORS.textColorSecondary,
-  //             fontWeight: 'bold',
-  //           }}
-  //           ellipsizeMode="tail"
-  //           numberOfLines={2}>
-  //           {title}
-  //         </Text>
-  //         <Text
-  //           style={{
-  //             color: COLORS.textColorSecondary,
-  //             marginRight: 25,
-  //           }}
-  //           ellipsizeMode="tail"
-  //           numberOfLines={2}>
-  //           {address}
-  //         </Text>
-  //       </View>
-  //     </TouchableOpacity>
-  //   );
-  // };
 
   return (
     <View style={{height: '100%'}}>
@@ -251,20 +208,7 @@ const OrderBottomSheet = (props: OrderBottomSheetProps) => {
             </Text>
           </View>
           <View style={[styles.OrderBottomSheetRightContainer]}>
-            {/* <LocationItem
-              id="1"
-              icon={require('../assets/icons/location.png')}
-              title={'To Current Location'}
-              address={'Lat:121.1313 Long: -123.4231'}
-              onPressHandler={() => setSelectedLocationId('1')}
-            />
-            <LocationItem
-              id={myAddress.id}
-              icon={require('../assets/icons/saved.png')}
-              title={'To Saved Address'}
-              address={myAddress.body}
-              onPressHandler={() => setSelectedLocationId('2')}
-            /> */}
+            <AddressPicker onSelect={() => {}} />
           </View>
         </View>
       </View>

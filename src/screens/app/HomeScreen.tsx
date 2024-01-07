@@ -1,34 +1,43 @@
-import {StyleSheet, Text, View, Image, FlatList} from 'react-native';
-import React, {useEffect} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
+import React from 'react';
 import CategoriesCarousel from '../../components/CategoriesCarousel';
 import PostCard from '../../components/PostCard';
-import usePlateStore from '../../stores/plateStore';
 import axios from 'axios';
+import useSWR from 'swr';
+import {COLORS} from '../../utils/Colors';
 
 const HomeScreen = () => {
-  const plates = usePlateStore(state => state.plates);
-  const storePlates = usePlateStore(state => state.storePlates);
-
-  const getData = async () => {
-    try {
-      const response = await axios.get(`plates`);
-      storePlates(response.data);
-    } catch (error) {
-      console.log(error);
-    }
+  const getPlate = async (url: string) => {
+    const response = await axios.get(url);
+    return response.data;
   };
+  const {data, error, isLoading, mutate} = useSWR(
+    'plates?populate=host&limit=10&page=1',
+    getPlate,
+  );
 
-  useEffect(() => {
-    getData();
-  }, []);
+  if (error) {
+    return <Text>Something went wrong</Text>;
+  }
+
+  if (isLoading) {
+    return <ActivityIndicator color={COLORS.main} />;
+  }
 
   return (
     <View style={styles.mainContainer}>
       <FlatList
         ListHeaderComponent={<CategoriesCarousel />}
-        data={plates}
-        renderItem={plate => (
-          <PostCard plate={plate.item} key={plate.item?.id} />
+        data={data?.plates}
+        renderItem={({item}) => (
+          <PostCard plate={item} host={item.host} key={item.id} />
         )}
         keyExtractor={plate => plate.index}
       />
@@ -51,7 +60,5 @@ const HomeScreen = () => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    // backgroundColor: '#fff',
-  },
+  mainContainer: {},
 });

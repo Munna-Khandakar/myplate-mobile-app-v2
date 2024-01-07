@@ -1,5 +1,5 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {Fragment, useRef} from 'react';
+import React, {Fragment, useRef, useState} from 'react';
 import {COLORS} from '../utils/Colors';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import OrderBottomSheet from './OrderBottomSheet';
@@ -12,8 +12,11 @@ type PostCardProps = {
   host: UserType;
   forPreview?: Boolean;
 };
+
+const CHAR_LIMIT = 200;
 const PostCard = (props: PostCardProps) => {
   const {plate, host, forPreview = false} = props;
+  const [seeMore, setSeeMore] = useState(false);
   const refRBSheet = useRef<RBSheet | null>(null);
 
   return (
@@ -86,7 +89,18 @@ const PostCard = (props: PostCardProps) => {
         </View>
       </View>
       <View style={styles.PostCardDescriptionContainer}>
-        <Text style={styles.PostCardDescription}>{plate?.description}</Text>
+        <Text style={styles.PostCardDescription}>
+          {!seeMore
+            ? plate?.description.slice(0, CHAR_LIMIT)
+            : plate?.description}
+        </Text>
+        {plate?.description.length > CHAR_LIMIT && !seeMore && (
+          <TouchableOpacity onPress={() => setSeeMore(true)}>
+            <Text style={{color: COLORS.main, fontWeight: 'bold'}}>
+              See more
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       {plate?.images && plate?.images.length > 0 && (
         <View style={styles.PostCardImageContainer}>
@@ -109,7 +123,11 @@ const PostCard = (props: PostCardProps) => {
       <View style={styles.PostCardButtonContainer}>
         <TouchableOpacity
           style={styles.PostCardButton}
-          onPress={() => refRBSheet?.current?.open()}>
+          onPress={() => {
+            if (!forPreview) {
+              refRBSheet?.current?.open();
+            }
+          }}>
           <View>
             <Text
               style={{
@@ -133,7 +151,6 @@ const PostCard = (props: PostCardProps) => {
               paddingRight: 8,
               paddingTop: 5,
               paddingBottom: 5,
-              // color: COLORS.main,
               position: 'absolute',
               right: 0,
             }}>
