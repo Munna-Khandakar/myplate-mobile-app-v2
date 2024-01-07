@@ -125,7 +125,7 @@ const OrderBottomSheet = (props: OrderBottomSheetProps) => {
         {/* first row */}
         <View style={{flexDirection: 'row'}}>
           <View style={[styles.OrderBottomSheetLeftContainer, {height: 110}]}>
-            {plate?.image[0] ? (
+            {plate?.images[0] ? (
               <Image
                 style={{
                   borderRadius: 10,
@@ -134,7 +134,7 @@ const OrderBottomSheet = (props: OrderBottomSheetProps) => {
                   width: '100%',
                 }}
                 source={{
-                  uri: plate?.image[0],
+                  uri: plate?.images[0],
                 }}
               />
             ) : (

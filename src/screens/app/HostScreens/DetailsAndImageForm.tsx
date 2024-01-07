@@ -22,7 +22,7 @@ const IMG =
 export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
   const {form} = props;
   const {control, setValue, watch} = form;
-  const hasImag = watch('image')[0];
+  const hasImag = watch('images')[0];
 
   return (
     <View>
@@ -76,7 +76,7 @@ export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
       {hasImag !== '' && (
         <View style={{marginBottom: 10, marginLeft: 10}}>
           <Image
-            source={{uri: watch('image')[0]}}
+            source={{uri: watch('images')[0]}}
             style={{
               height: 150,
               width: 200,
@@ -87,7 +87,7 @@ export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
       )}
 
       <Controller
-        name={'image'}
+        name={'images'}
         control={control}
         rules={{
           required: {value: true, message: 'Please upload an image'},
@@ -122,7 +122,7 @@ export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
                     fontSize: 15,
                     fontWeight: 'bold',
                   }}>
-                  {watch('image') ? 'Change' : 'Upload'}
+                  {watch('images') ? 'Change' : 'Upload'}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -134,39 +134,6 @@ export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
           </View>
         )}
       />
-
-      {/* <TouchableOpacity
-        style={{
-          alignItems: 'center',
-          marginBottom: 10,
-        }}
-        onPress={() => {
-          setValue('image', [IMG]);
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            backgroundColor: COLORS.secondary,
-            padding: 10,
-            width: 120,
-            borderRadius: 10,
-            alignItems: 'center',
-          }}>
-          <Image
-            source={require('../../../assets/icons/camera.png')}
-            style={{height: 30, width: 30, resizeMode: 'contain'}}
-          />
-          <Text
-            style={{
-              color: 'white',
-              marginLeft: 10,
-              fontSize: 15,
-              fontWeight: 'bold',
-            }}>
-            {watch('image') ? 'Change' : 'Upload'}
-          </Text>
-        </View>
-      </TouchableOpacity> */}
     </View>
   );
 };

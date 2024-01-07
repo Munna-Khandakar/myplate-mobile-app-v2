@@ -6,11 +6,11 @@ export type HostPlateType = {
   title: string;
   price: string;
   quantity: number;
-  image: string[];
+  images: string[];
   description: string;
   address: string;
   lastTimeToOrder: Date;
-  canOrderAnytime: boolean;
+  canOrderAnyTime: boolean;
 };
 
 export const HOST_PLATE_DEFAULT_VALUES = {
@@ -18,9 +18,9 @@ export const HOST_PLATE_DEFAULT_VALUES = {
   title: '',
   price: '0',
   quantity: 1,
-  image: [],
+  images: [],
   description: '',
   address: '',
   lastTimeToOrder: new Date(),
-  canOrderAnytime: false,
+  canOrderAnyTime: false,
 };

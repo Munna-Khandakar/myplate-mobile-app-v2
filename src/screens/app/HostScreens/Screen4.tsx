@@ -50,7 +50,7 @@ const Screen4 = (props: DateScreenProps) => {
       />
 
       <Controller
-        name={'canOrderAnytime'}
+        name={'canOrderAnyTime'}
         control={control}
         render={({field: {onChange, value}, fieldState: {error}}) => (
           <View style={{width: '100%', paddingLeft: 10}}>

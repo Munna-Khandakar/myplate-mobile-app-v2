@@ -33,6 +33,7 @@ const AddressPicker = (props: AddressPickerProps) => {
   const onClick = (address: AddressType) => {
     onSelect(address);
   };
+
   if (error) {
     return <Text>Something went wrong</Text>;
   }

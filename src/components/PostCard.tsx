@@ -71,7 +71,7 @@ const PostCard = (props: PostCardProps) => {
               {plate?.quantity} Plates Remaining
             </Text>
 
-            {plate?.canOrderAnytime && (
+            {plate?.canOrderAnyTime && (
               <Fragment>
                 <Image
                   source={require('../assets/icons/dot.png')}
@@ -88,13 +88,13 @@ const PostCard = (props: PostCardProps) => {
       <View style={styles.PostCardDescriptionContainer}>
         <Text style={styles.PostCardDescription}>{plate?.description}</Text>
       </View>
-      {plate?.image && plate?.image.length > 0 && (
+      {plate?.images && plate?.images.length > 0 && (
         <View style={styles.PostCardImageContainer}>
-          {plate?.image[0] ? (
+          {plate?.images[0] ? (
             <Image
               style={styles.PostCardImage}
               source={{
-                uri: plate?.image[0],
+                uri: plate?.images[0],
               }}
             />
           ) : (

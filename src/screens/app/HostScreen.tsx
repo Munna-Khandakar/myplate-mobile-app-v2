@@ -6,6 +6,7 @@ import {
   Image,
   ImageSourcePropType,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import {useForm} from 'react-hook-form';
 import Screen3 from './HostScreens/Screen3';
@@ -58,6 +59,8 @@ const DATA_MAP: DataMap = {
     lastScreen: true,
   },
 };
+const windowHeight = Dimensions.get('window').height;
+const PREVIEW_HEIGHT = windowHeight * 0.6;
 
 const HostScreen = () => {
   const [screen, setScreen] = useState(0);
@@ -98,6 +101,7 @@ const HostScreen = () => {
   const onSubmit = async (data: HostPlateType) => {
     console.log('form submit handler');
     const plate = {...data, price: parseInt(data.price)};
+    console.log({plate});
 
     const res = await axios.post('/plates', plate);
     console.log(res);
@@ -127,9 +131,9 @@ const HostScreen = () => {
 
     if (screen == 2) {
       await trigger('description');
-      await trigger('image');
+      await trigger('images');
 
-      if (errors.description || errors.image) {
+      if (errors.description || errors.images) {
         return;
       } else {
         setScreen(s => s + 1);
@@ -176,9 +180,17 @@ const HostScreen = () => {
         <View style={screen == 4 ? {} : styles.hidden}>
           <Screen4 form={form} />
         </View>
-        <View style={screen == 5 ? {} : styles.hidden}>
+        <ScrollView
+          style={
+            screen == 5
+              ? {
+                  maxHeight: PREVIEW_HEIGHT,
+                  flexGrow: 1,
+                }
+              : styles.hidden
+          }>
           <PostCard plate={watch()} host={host} />
-        </View>
+        </ScrollView>
       </Fragment>
     );
   };
