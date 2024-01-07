@@ -1,3 +1,4 @@
+import {UserType} from './UserTypes';
 import {AddressType} from './AddressType';
 
 export type HostPlateType = {
@@ -7,7 +8,7 @@ export type HostPlateType = {
   quantity: number;
   image: string[];
   description: string;
-  address: AddressType;
+  address: string;
   lastTimeToOrder: Date;
   canOrderAnytime: boolean;
 };
@@ -19,7 +20,7 @@ export const HOST_PLATE_DEFAULT_VALUES = {
   quantity: 1,
   image: [],
   description: '',
-  address: {},
+  address: '',
   lastTimeToOrder: new Date(),
   canOrderAnytime: false,
 };

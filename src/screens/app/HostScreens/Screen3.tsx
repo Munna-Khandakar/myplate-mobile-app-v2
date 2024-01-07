@@ -1,6 +1,6 @@
 import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import {UseFormReturn} from 'react-hook-form';
+import {Controller, UseFormReturn} from 'react-hook-form';
 import {COLORS} from '../../../utils/Colors';
 import AddressPicker from '../../../components/common/AddressPicker';
 import {HostPlateType} from '../../../types/HostPlateType';
@@ -11,7 +11,7 @@ type LocationScreenProps = {
 
 const Screen3 = (props: LocationScreenProps) => {
   const {form} = props;
-  const {setValue, watch} = form;
+  const {control, watch} = form;
 
   return (
     <View>
@@ -25,12 +25,24 @@ const Screen3 = (props: LocationScreenProps) => {
         Select Pickup Location
       </Text>
       <View style={styles.locationContainer}>
-        <AddressPicker
-          selectedId={watch('address')?._id}
-          onSelect={address => {
-            setValue('address', address);
+        <Controller
+          name={'address'}
+          control={control}
+          rules={{
+            required: {value: true, message: 'Please select pickup location'},
           }}
-          height={250}
+          render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
+            <View style={{width: '100%', minHeight: 150}}>
+              <AddressPicker
+                selectedId={watch('address')}
+                onSelect={address => {
+                  onChange(address._id);
+                }}
+                height={250}
+              />
+              {error && <Text style={{color: 'red'}}>{error.message}</Text>}
+            </View>
+          )}
         />
       </View>
     </View>

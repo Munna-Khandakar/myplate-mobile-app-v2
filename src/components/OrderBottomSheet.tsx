@@ -5,8 +5,17 @@ import MainActionButton from './MainActionButton';
 import useCountryCode from '../hooks/useCountryCode';
 import {Blurhash} from 'react-native-blurhash';
 import useProfileStore from '../stores/profileStore';
+import {HostPlateType} from '../types/HostPlateType';
+import {UserType} from '../types/UserTypes';
 
-const OrderBottomSheet = ({plate}) => {
+type OrderBottomSheetProps = {
+  plate: HostPlateType;
+  host: UserType;
+};
+
+const OrderBottomSheet = (props: OrderBottomSheetProps) => {
+  const {plate, host} = props;
+
   const myAddress = useProfileStore(state => state.myAddress);
   const deliveryCharge = 60;
   const countryCode = useCountryCode();
@@ -15,19 +24,6 @@ const OrderBottomSheet = ({plate}) => {
   const [maxPlateToOrder, setMaxPlateToOrder] = useState(plate?.quantity || 3);
   const [selectedLocationId, setSelectedLocationId] = useState('1');
 
-  useEffect(() => {
-    setPlateCost(parseInt(plate?.price));
-    setMaxPlateToOrder(parseInt(plate?.quantity));
-  }, []);
-  // price calculation by changing plateamount
-  useEffect(() => {
-    calculatePrice();
-  }, [plateAmount]);
-  const calculatePrice = () => {
-    setPlateCost(
-      parseInt(plateAmount) * parseInt(plate?.price) + parseInt(deliveryCharge),
-    );
-  };
   const PlusButton = () => (
     <TouchableOpacity
       onPress={() => {
@@ -78,58 +74,45 @@ const OrderBottomSheet = ({plate}) => {
     </TouchableOpacity>
   );
 
-  const LocationItem = ({id, icon, title, address, onPressHandler}) => {
-    return (
-      <TouchableOpacity
-        onPress={onPressHandler}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginBottom: 5,
-          borderRadius: 10,
-          padding: 10,
-          backgroundColor:
-            selectedLocationId == id ? COLORS.tranparenSecondary : 'white',
-          borderEndColor: COLORS.main,
-          borderEndWidth: selectedLocationId == id ? 1 : 0,
-        }}>
-        <Image source={icon} style={{height: 30, width: 30}} />
-        <View style={{marginLeft: 5}}>
-          <Text
-            style={{
-              color: COLORS.textColorSecondary,
-              fontWeight: 'bold',
-            }}
-            ellipsizeMode="tail"
-            numberOfLines={2}>
-            {title}
-          </Text>
-          <Text
-            style={{
-              color: COLORS.textColorSecondary,
-              marginRight: 25,
-            }}
-            ellipsizeMode="tail"
-            numberOfLines={2}>
-            {address}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  const createOrderhandler = () => {
-    const data = {
-      deliveryCharge_info: '61cb340584d2c97728f3ae51',
-      delivery_address: 'Dhaka',
-      host_info: plate?.host_profile?._id,
-      item_quantity: plateAmount,
-      note: '',
-      plate_info: plate?._id,
-      total_price: plateCost,
-    };
-    console.log(data);
-  };
+  // const LocationItem = ({id, icon, title, address, onPressHandler}) => {
+  //   return (
+  //     <TouchableOpacity
+  //       onPress={onPressHandler}
+  //       style={{
+  //         flexDirection: 'row',
+  //         alignItems: 'center',
+  //         marginBottom: 5,
+  //         borderRadius: 10,
+  //         padding: 10,
+  //         backgroundColor:
+  //           selectedLocationId == id ? COLORS.tranparenSecondary : 'white',
+  //         borderEndColor: COLORS.main,
+  //         borderEndWidth: selectedLocationId == id ? 1 : 0,
+  //       }}>
+  //       <Image source={icon} style={{height: 30, width: 30}} />
+  //       <View style={{marginLeft: 5}}>
+  //         <Text
+  //           style={{
+  //             color: COLORS.textColorSecondary,
+  //             fontWeight: 'bold',
+  //           }}
+  //           ellipsizeMode="tail"
+  //           numberOfLines={2}>
+  //           {title}
+  //         </Text>
+  //         <Text
+  //           style={{
+  //             color: COLORS.textColorSecondary,
+  //             marginRight: 25,
+  //           }}
+  //           ellipsizeMode="tail"
+  //           numberOfLines={2}>
+  //           {address}
+  //         </Text>
+  //       </View>
+  //     </TouchableOpacity>
+  //   );
+  // };
 
   return (
     <View style={{height: '100%'}}>
@@ -142,7 +125,7 @@ const OrderBottomSheet = ({plate}) => {
         {/* first row */}
         <View style={{flexDirection: 'row'}}>
           <View style={[styles.OrderBottomSheetLeftContainer, {height: 110}]}>
-            {plate?.plate_images[0] ? (
+            {plate?.image[0] ? (
               <Image
                 style={{
                   borderRadius: 10,
@@ -151,7 +134,7 @@ const OrderBottomSheet = ({plate}) => {
                   width: '100%',
                 }}
                 source={{
-                  uri: plate?.plate_images[0],
+                  uri: plate?.image[0],
                 }}
               />
             ) : (
@@ -159,7 +142,7 @@ const OrderBottomSheet = ({plate}) => {
                 blurhash="LGFFaXYk^6#M@-5c,1J5@[or[Q6."
                 style={{
                   borderRadius: 10,
-                  resizeMode: 'cover',
+                  // resizeMode: 'cover',
                   height: '100%',
                   width: '100%',
                 }}
@@ -169,16 +152,16 @@ const OrderBottomSheet = ({plate}) => {
           <View style={[styles.OrderBottomSheetRightContainer, {height: 110}]}>
             <Text
               style={{color: COLORS.main, fontSize: 18, fontWeight: 'bold'}}>
-              {plate?.plate_name}
+              {plate?.title}
             </Text>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <Text
                 style={{color: COLORS.main}}
                 ellipsizeMode="tail"
                 numberOfLines={1}>
-                from {plate?.postedBy?.name}
+                from {host?.username}
               </Text>
-              {plate?.postedBy?.myCertification && (
+              {host?.isVerified && (
                 <Image
                   source={require('../assets/icons/verified.png')}
                   style={{height: 10, width: 10, marginLeft: 5}}
@@ -186,13 +169,13 @@ const OrderBottomSheet = ({plate}) => {
               )}
             </View>
             {/* // TODO::correct the time UI discussion needed */}
-            <Text style={{color: COLORS.textColorSecondary}}>
+            {/* <Text style={{color: COLORS.textColorSecondary}}>
               Estimate Recieving Time:
-              {plate?.last_date_to_order == '' &&
+              {plate?.lastTimeToOrder == '' &&
               plate?.last_time_to_order == ''
                 ? 'Anytime'
                 : 'After 3.30 PM'}
-            </Text>
+            </Text> */}
             <View
               style={{
                 flexDirection: 'row',
@@ -268,7 +251,7 @@ const OrderBottomSheet = ({plate}) => {
             </Text>
           </View>
           <View style={[styles.OrderBottomSheetRightContainer]}>
-            <LocationItem
+            {/* <LocationItem
               id="1"
               icon={require('../assets/icons/location.png')}
               title={'To Current Location'}
@@ -281,14 +264,15 @@ const OrderBottomSheet = ({plate}) => {
               title={'To Saved Address'}
               address={myAddress.body}
               onPressHandler={() => setSelectedLocationId('2')}
-            />
+            /> */}
           </View>
         </View>
       </View>
       <View style={{flexDirection: 'row', width: '100%'}}>
         <MainActionButton
           text="CONFIRM ORDER"
-          pressHandler={createOrderhandler}
+          pressHandler={() => {}}
+          // pressHandler={createOrderhandler}
         />
       </View>
     </View>

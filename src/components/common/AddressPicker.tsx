@@ -1,42 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  FlatList,
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import {AddressType} from '../../types/AddressType';
 import {COLORS} from '../../utils/Colors';
-
-const DATA: AddressType[] = [
-  {
-    _id: '656a0e805f8ebe981c526584',
-    description:
-      'Mirpur DOHS,Dhaka 2  Clicking this, myplate delivery system will not deliver your plate.',
-    title: 'DOHS Office',
-  },
-  {
-    _id: '656af7b3ff1b1fe701b31481',
-    description: 'Mirpur DOHS',
-    title: 'New Office',
-  },
-  {
-    _id: '6590fdadc0adecba57c4e593',
-
-    description: 'Mirpur DOHS,Dhaka 2',
-    title: 'Office 2 Test',
-  },
-  {
-    _id: '656a0e805f8ebe981c5265841',
-    description: 'Mirpur DOHS,Dhaka 2',
-    title: 'DOHS Office',
-  },
-  {
-    _id: '656af7b3ff1b1fe701b314811',
-    description: 'Mirpur DOHS',
-    title: 'New Office',
-  },
-  {
-    _id: '6590fdadc0adecba57c4e5931',
-    description: 'Mirpur DOHS,Dhaka 2',
-    title: 'Office 2 Test',
-  },
-];
+import useSWR from 'swr';
+import {getAddress} from '../../requests/address';
 
 type AddressPickerProps = {
   onSelect: (address: AddressType) => void;
@@ -47,6 +21,10 @@ type AddressPickerProps = {
 const AddressPicker = (props: AddressPickerProps) => {
   const {onSelect, selectedId = '', height = 180} = props;
   const [key, setKey] = useState(0);
+  const {data, error, isLoading, mutate} = useSWR<AddressType[]>(
+    'address',
+    getAddress,
+  );
 
   useEffect(() => {
     setKey(prevKey => prevKey + 1);
@@ -55,11 +33,19 @@ const AddressPicker = (props: AddressPickerProps) => {
   const onClick = (address: AddressType) => {
     onSelect(address);
   };
+  if (error) {
+    return <Text>Something went wrong</Text>;
+  }
+
+  if (isLoading) {
+    return <ActivityIndicator size="small" color={COLORS.main} />;
+  }
+
   return (
     <View style={{height: height}}>
       <FlatList
         key={key}
-        data={DATA}
+        data={data}
         renderItem={({item}) => {
           const isSelected = item._id == selectedId;
 

@@ -1,31 +1,34 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useRef} from 'react';
+import React, {Fragment, useRef} from 'react';
 import {COLORS} from '../utils/Colors';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import OrderBottomSheet from './OrderBottomSheet';
 import {Blurhash} from 'react-native-blurhash';
 import {HostPlateType} from '../types/HostPlateType';
+import {UserType} from '../types/UserTypes';
 
 type PostCardProps = {
   plate: HostPlateType;
+  host: UserType;
+  forPreview?: Boolean;
 };
 const PostCard = (props: PostCardProps) => {
-  const {plate} = props;
+  const {plate, host, forPreview = false} = props;
   const refRBSheet = useRef<RBSheet | null>(null);
-  //console.log(plate);
+
   return (
     <View style={styles.PostCardContainer}>
       <View style={styles.PostHeaderContainer}>
-        {/* <Image
+        <Image
           style={styles.userImage}
           source={
-            !plate?.host_profile?.profile_image
+            !host?.profileImage
               ? require('../assets/chef.png')
               : {
-                  uri: plate?.host_profile?.profile_image,
+                  uri: host?.profileImage,
                 }
           }
-        /> */}
+        />
         <View style={styles.PostTitleContainer}>
           <View
             style={{
@@ -39,50 +42,59 @@ const PostCard = (props: PostCardProps) => {
               style={styles.threeDotIcon}
             />
           </View>
-
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            {/* <Text style={{fontSize: 14, color: COLORS.secondary}}>
-              {plate?.postedBy?.name}
+            <Text style={{fontSize: 14, color: COLORS.secondary}}>
+              {host?.username}
             </Text>
-            {plate?.postedBy?.myCertification && (
+            {host?.isVerified && (
               <Image
                 source={require('../assets/icons/verified.png')}
                 style={styles.verifiedIcon}
               />
-            )} */}
+            )}
           </View>
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
             }}>
-            <Text style={{fontSize: 12, color: COLORS.secondary}}>
+            <Text
+              style={{
+                fontSize: 12,
+                color: COLORS.secondary,
+                fontWeight: 'bold',
+              }}>
               {plate?.quantity} Plates Remaining
             </Text>
-            <Image
-              source={require('../assets/icons/dot.png')}
-              style={styles.dotIcon}
-            />
-            <Text style={{fontSize: 12, color: COLORS.secondary}}>
-              All time available
-            </Text>
+
+            {plate?.canOrderAnytime && (
+              <Fragment>
+                <Image
+                  source={require('../assets/icons/dot.png')}
+                  style={styles.dotIcon}
+                />
+                <Text style={{fontSize: 12, color: COLORS.secondary}}>
+                  All time available
+                </Text>
+              </Fragment>
+            )}
           </View>
         </View>
       </View>
       <View style={styles.PostCardDescriptionContainer}>
         <Text style={styles.PostCardDescription}>{plate?.description}</Text>
       </View>
-      {/* {plate?.plate_images && plate?.plate_images.length > 0 && (
+      {plate?.image && plate?.image.length > 0 && (
         <View style={styles.PostCardImageContainer}>
-          {plate?.plate_images[0] ? (
+          {plate?.image[0] ? (
             <Image
               style={styles.PostCardImage}
               source={{
-                uri: plate?.plate_images[0],
+                uri: plate?.image[0],
               }}
             />
           ) : (
@@ -92,7 +104,7 @@ const PostCard = (props: PostCardProps) => {
             />
           )}
         </View>
-      )} */}
+      )}
 
       <View style={styles.PostCardButtonContainer}>
         <TouchableOpacity
@@ -150,7 +162,7 @@ const PostCard = (props: PostCardProps) => {
           },
         }}
         onOpen={() => console.log('first')}>
-        <OrderBottomSheet plate={plate} />
+        <OrderBottomSheet plate={plate} host={host} />
       </RBSheet>
     </View>
   );

@@ -86,7 +86,56 @@ export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
         </View>
       )}
 
-      <TouchableOpacity
+      <Controller
+        name={'image'}
+        control={control}
+        rules={{
+          required: {value: true, message: 'Please upload an image'},
+        }}
+        render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
+          <View style={{width: '100%'}}>
+            <TouchableOpacity
+              style={{
+                alignItems: 'center',
+                marginBottom: 10,
+              }}
+              onPress={() => {
+                onChange([IMG]);
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  backgroundColor: COLORS.secondary,
+                  padding: 10,
+                  width: 120,
+                  borderRadius: 10,
+                  alignItems: 'center',
+                }}>
+                <Image
+                  source={require('../../../assets/icons/camera.png')}
+                  style={{height: 30, width: 30, resizeMode: 'contain'}}
+                />
+                <Text
+                  style={{
+                    color: 'white',
+                    marginLeft: 10,
+                    fontSize: 15,
+                    fontWeight: 'bold',
+                  }}>
+                  {watch('image') ? 'Change' : 'Upload'}
+                </Text>
+              </View>
+            </TouchableOpacity>
+            {error && (
+              <Text style={{color: 'red', marginLeft: 10}}>
+                {error.message}
+              </Text>
+            )}
+          </View>
+        )}
+      />
+
+      {/* <TouchableOpacity
         style={{
           alignItems: 'center',
           marginBottom: 10,
@@ -117,7 +166,7 @@ export const DetailsAndImageForm = (props: DetailsAndImageFormTypes) => {
             {watch('image') ? 'Change' : 'Upload'}
           </Text>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

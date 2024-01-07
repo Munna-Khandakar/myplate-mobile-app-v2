@@ -5,9 +5,8 @@ import {
   Text,
   Image,
   ImageSourcePropType,
-  Button,
+  ScrollView,
 } from 'react-native';
-import Toast from 'react-native-toast-message';
 import {useForm} from 'react-hook-form';
 import Screen3 from './HostScreens/Screen3';
 import Screen4 from './HostScreens/Screen4';
@@ -23,6 +22,8 @@ import {
   HostPlateType,
 } from '../../types/HostPlateType';
 import PostCard from '../../components/PostCard';
+import {UserType} from '../../types/UserTypes';
+import axios from 'axios';
 
 interface DataItem {
   text: string;
@@ -60,16 +61,8 @@ const DATA_MAP: DataMap = {
 
 const HostScreen = () => {
   const [screen, setScreen] = useState(0);
-  const [showPreview, setShowPreview] = useState(false);
   const [category, setCategory] = useState([]);
 
-  const showToast = (type: string, text1: string, text2: string) => {
-    Toast.show({
-      type: type,
-      text1: text1,
-      text2: text2,
-    });
-  };
   const form = useForm<HostPlateType>({
     defaultValues: HOST_PLATE_DEFAULT_VALUES,
     mode: 'all',
@@ -93,32 +86,79 @@ const HostScreen = () => {
     fetchCategory();
   }, []);
 
-  const onSubmit = (data: HostPlateType) => {
-    console.log('hi');
-    console.log(data);
+  const host: UserType = {
+    username: 'Munna',
+    email: 'aacnsa',
+    phone: '+880163224',
+    isVerified: false,
+    profileImage:
+      'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
   };
-  console.log('erorrs =>', errors);
 
-  const nextScreen = () => {
-    // trigger();
+  const onSubmit = async (data: HostPlateType) => {
+    console.log('form submit handler');
+    const plate = {...data, price: parseInt(data.price)};
+
+    const res = await axios.post('/plates', plate);
+    console.log(res);
+  };
+  //console.log('erorrs from Host =>', errors);
+
+  const nextScreen = async () => {
+    if (screen == 0) {
+      await trigger('category');
+      if (errors.category) {
+        return;
+      } else {
+        setScreen(s => s + 1);
+      }
+    }
+
+    if (screen == 1) {
+      await trigger('title');
+      await trigger('price');
+      await trigger('quantity');
+      if (errors.title || errors.price || errors.quantity) {
+        return;
+      } else {
+        setScreen(s => s + 1);
+      }
+    }
+
+    if (screen == 2) {
+      await trigger('description');
+      await trigger('image');
+
+      if (errors.description || errors.image) {
+        return;
+      } else {
+        setScreen(s => s + 1);
+      }
+    }
+    if (screen == 3) {
+      await trigger('address');
+      console.log(errors);
+      if (errors.address) {
+        return;
+      } else {
+        setScreen(s => s + 1);
+      }
+    }
 
     if (screen == 4) {
-      // handleSubmit(onSubmit)();
-      // return;
-      setShowPreview(true);
+      await trigger('lastTimeToOrder');
+      if (errors.lastTimeToOrder) {
+        return;
+      } else {
+        setScreen(s => s + 1);
+      }
     }
-    setScreen(s => s + 1);
   };
   const prevScreen = () => {
     setScreen(s => s - 1);
   };
 
-  const renderPreviewScreen = () => {
-    const demoData = watch();
-    return <PostCard plate={demoData} />;
-  };
-
-  const renderS = () => {
+  const renderForms = () => {
     return (
       <Fragment>
         <View style={screen == 0 ? {} : styles.hidden}>
@@ -136,6 +176,9 @@ const HostScreen = () => {
         <View style={screen == 4 ? {} : styles.hidden}>
           <Screen4 form={form} />
         </View>
+        <View style={screen == 5 ? {} : styles.hidden}>
+          <PostCard plate={watch()} host={host} />
+        </View>
       </Fragment>
     );
   };
@@ -148,9 +191,9 @@ const HostScreen = () => {
       </View>
     );
   };
+
   return (
     <View style={{height: '100%'}}>
-      <Toast />
       <View
         style={{
           flexDirection: 'column',
@@ -158,9 +201,8 @@ const HostScreen = () => {
           justifyContent: 'space-between',
         }}>
         <View>
-          {renderBanner()}
-          {renderS()}
-          {showPreview && renderPreviewScreen()}
+          {DATA_MAP[screen] && renderBanner()}
+          {renderForms()}
         </View>
         <View
           style={{
@@ -171,7 +213,14 @@ const HostScreen = () => {
           {!DATA_MAP[screen]?.firstScreen && (
             <SecondaryActionButton text={`← Back`} pressHandler={prevScreen} />
           )}
-          <MainActionButton text={`Next →`} pressHandler={nextScreen} />
+          {screen == 5 ? (
+            <MainActionButton
+              text={`Post`}
+              pressHandler={handleSubmit(onSubmit)}
+            />
+          ) : (
+            <MainActionButton text={`Next →`} pressHandler={nextScreen} />
+          )}
         </View>
       </View>
     </View>

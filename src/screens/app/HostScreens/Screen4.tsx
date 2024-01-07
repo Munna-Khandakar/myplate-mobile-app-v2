@@ -1,6 +1,14 @@
-import React from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
-import {UseFormReturn} from 'react-hook-form';
+import React, {useMemo, useState} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Switch,
+} from 'react-native';
+import RadioGroup, {RadioButtonProps} from 'react-native-radio-buttons-group';
+import {Controller, UseFormReturn} from 'react-hook-form';
 import DatePicker from 'react-native-date-picker';
 import {COLORS} from '../../../utils/Colors';
 import TitleWithSubtitle from '../../../components/TitleWithSubtitle';
@@ -12,59 +20,69 @@ type DateScreenProps = {
 
 const Screen4 = (props: DateScreenProps) => {
   const {form} = props;
-  const {setValue, watch} = form;
+  const {control, watch} = form;
 
   return (
     <View>
-      {!watch('canOrderAnytime') && (
-        <View>
-          <TitleWithSubtitle
-            title={`Last time to order`}
-            subtitle={`After this time, no cleint can place order and you need to deliver your plate as early as possible after this time`}
-          />
-          <DatePicker
-            date={watch('lastTimeToOrder')}
-            onDateChange={(date: Date) => {
-              setValue('lastTimeToOrder', date);
-            }}
-            androidVariant="nativeAndroid"
-            textColor={COLORS.main}
-          />
-        </View>
-      )}
+      <Controller
+        name={'lastTimeToOrder'}
+        control={control}
+        rules={{
+          required: {value: true, message: 'Please select pickup location'},
+        }}
+        render={({field: {onChange, onBlur, value}, fieldState: {error}}) => (
+          <View style={{width: '100%', minHeight: 150}}>
+            <TitleWithSubtitle
+              title={`Last time to order`}
+              subtitle={`After this time, no cleint can place order and you need to deliver your plate as early as possible after this time`}
+            />
+            <DatePicker
+              date={watch('lastTimeToOrder')}
+              onDateChange={(date: Date) => {
+                onChange(date);
+              }}
+              androidVariant="nativeAndroid"
+              textColor={COLORS.main}
+            />
+            {error && <Text style={{color: 'red'}}>{error.message}</Text>}
+          </View>
+        )}
+      />
 
-      <TouchableOpacity
-        style={{margin: 10, flexDirection: 'row'}}
-        onPress={() => setValue('canOrderAnytime', !watch('canOrderAnytime'))}>
-        <Image
-          source={
-            watch('canOrderAnytime')
-              ? require('../../../assets/icons/active/24-hours.png')
-              : require('../../../assets/icons/24-hours.png')
-          }
-          style={{width: 20, height: 20, resizeMode: 'contain'}}
-        />
-        <Text
-          style={{
-            color: COLORS.main,
-            fontWeight: 'bold',
-            marginLeft: 10,
-            fontSize: 15,
-          }}>
-          Can Order Any Time
-        </Text>
-      </TouchableOpacity>
-      {watch('canOrderAnytime') && (
-        <Text
-          style={{
-            color: COLORS.main,
-            marginLeft: 10,
-            fontSize: 15,
-          }}>
-          Client can order anytime and you have to deliver the plate as soon as
-          possible
-        </Text>
-      )}
+      <Controller
+        name={'canOrderAnytime'}
+        control={control}
+        render={({field: {onChange, value}, fieldState: {error}}) => (
+          <View style={{width: '100%', paddingLeft: 10}}>
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: 'bold',
+                color: COLORS.main,
+                marginTop: 10,
+                marginBottom: 10,
+              }}>
+              All Time Available ?
+            </Text>
+            <Switch
+              trackColor={{false: '#767577', true: COLORS.main}}
+              value={value}
+              onValueChange={onChange}
+            />
+            {value && (
+              <Text
+                style={{
+                  color: COLORS.main,
+                  marginTop: 10,
+                  fontSize: 15,
+                }}>
+                Client can order anytime and you have to deliver the plate as
+                soon as possible
+              </Text>
+            )}
+          </View>
+        )}
+      />
     </View>
   );
 };
