@@ -1,11 +1,14 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
 import {COLORS} from '../../utils/Colors';
-import {useNavigation} from '@react-navigation/native';
+import {NavigationProp} from '@react-navigation/native';
 import useAuthStore from '../../stores/authStore';
 
-const ProfileCard = () => {
-  const navigation = useNavigation();
+type ProfileCardProps = {
+  navigation: NavigationProp<Record<string, object | undefined>, string>;
+};
+const ProfileCard = (props: ProfileCardProps) => {
+  const {navigation} = props;
   const user = useAuthStore(state => state.user);
 
   return (

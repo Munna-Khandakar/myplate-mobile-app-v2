@@ -18,7 +18,7 @@ import {useForm, Controller} from 'react-hook-form';
 
 const RegistrationScreen = ({navigation}) => {
   const [mobile, setMobile] = useState('');
-  const [verifiedPhone, setVerifiedPhone] = useState(true);
+  const [verifiedPhone, setVerifiedPhone] = useState(false);
   const [isDiasble, setIsDisable] = useState(false);
 
   const {

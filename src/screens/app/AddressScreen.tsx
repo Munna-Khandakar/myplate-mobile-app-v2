@@ -70,10 +70,8 @@ const AddressScreen = ({navigation}: {navigation: any}) => {
   const onFormSubmit = async (data: AddressFormInputs) => {
     try {
       const res: any = await axios.post(`/address`, data);
-      if (res.statusCode == 201) {
-        showToast('success', res.message, 'Address Added');
-        mutate();
-      }
+      showToast('success', res.message, 'Address Added');
+      mutate();
     } catch (error: any) {
       showToast('error', error.error, error.message);
     }
@@ -143,7 +141,7 @@ const AddressScreen = ({navigation}: {navigation: any}) => {
           />
         </TouchableOpacity>
       </View>
-      {data &&
+      {data && data.length > 0 ? (
         data.map(address => (
           <View key={address._id} style={styles.addressCardContainer}>
             <View style={[styles.addressCard]}>
@@ -169,7 +167,25 @@ const AddressScreen = ({navigation}: {navigation: any}) => {
               </TouchableOpacity>
             </View>
           </View>
-        ))}
+        ))
+      ) : (
+        <View>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={[styles.button, {alignSelf: 'center', marginTop: 20}]}>
+            <Image
+              source={plusIcon}
+              style={{height: 20, width: 20, resizeMode: 'contain'}}
+            />
+          </TouchableOpacity>
+          <Text style={{textAlign: 'center', color: COLORS.main}}>
+            No Saved Address.
+          </Text>
+          <Text style={{textAlign: 'center', color: COLORS.main}}>
+            Click the plus button to add
+          </Text>
+        </View>
+      )}
       <CustomModal
         onClose={() => {
           setModalVisible(false);

@@ -9,30 +9,38 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {NavigationProp} from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import {useForm, Controller} from 'react-hook-form';
 import axios from 'axios';
 import SecondaryActionButton from '../../components/SecondaryActionButton';
 import MainActionButton from '../../components/MainActionButton';
 import useAuthStore from '../../stores/authStore';
-import COLORS from '../../utils/Colors';
+import {COLORS} from '../../utils/Colors';
 import InputField from '../../components/common/InputField';
+import {LoginFormInputs} from '../../types/login/LoginFormInputs';
 
-const LoginScreen = ({navigation}) => {
+type LoginScreenProps = {
+  navigation: NavigationProp<Record<string, object | undefined>, string>;
+};
+const LoginScreen = (props: LoginScreenProps) => {
+  const {navigation} = props;
+
   const storeUserToken = useAuthStore(state => state.storeUserToken);
+  const storeUser = useAuthStore(state => state.storeUser);
 
   const {
     control,
     handleSubmit,
     formState: {errors},
-  } = useForm({
+  } = useForm<LoginFormInputs>({
     defaultValues: {
-      username: 'user01@gmail.com',
+      phone: '01794807577',
       password: '1234',
     },
   });
 
-  const showToast = (type, text1, text2) => {
+  const showToast = (type: string, text1: string, text2: string) => {
     Toast.show({
       type: type,
       text1: text1,
@@ -40,18 +48,35 @@ const LoginScreen = ({navigation}) => {
     });
   };
 
+  const getMyProfile = async (token: string) => {
+    try {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const res = await axios.get(`/users/me`);
+      storeUser(res);
+      console.log({res});
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+  };
+
+  // @ts-ignore
   const onSubmit = async data => {
     try {
       const res = await axios.post(`/login`, data);
+      // @ts-ignore
       if (res.statusCode !== 201) {
+        // @ts-ignore
         return showToast('error', res.error, res.message);
       }
+      // @ts-ignore
       if (res.statusCode == 201) {
         const token = res.data.token;
         AsyncStorage.setItem('user_token', token);
         storeUserToken(token);
+        await getMyProfile(token);
       }
     } catch (error) {
+      // @ts-ignore
       showToast('error', error.error, error.message);
     }
   };
@@ -96,9 +121,9 @@ const LoginScreen = ({navigation}) => {
                 value={value}
               />
             )}
-            name="username"
+            name="phone"
           />
-          {errors.username && (
+          {errors.phone && (
             <Text style={styles.errorMessage}>This is required.</Text>
           )}
 
@@ -115,6 +140,7 @@ const LoginScreen = ({navigation}) => {
                 value={value}
                 label="Password"
                 isPassword
+                // @ts-ignore
                 togglePasswordVisibility={isVisible =>
                   console.log('Password visibility:', isVisible)
                 }
@@ -141,7 +167,6 @@ const LoginScreen = ({navigation}) => {
         style={{
           flexDirection: 'row',
           justifyContent: 'center',
-          color: COLORS.main,
         }}>
         <Text>New to the app?</Text>
         <TouchableOpacity

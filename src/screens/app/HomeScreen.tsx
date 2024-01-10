@@ -7,10 +7,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import React from 'react';
-import CategoriesCarousel from '../../components/CategoriesCarousel';
-import PostCard from '../../components/PostCard';
 import axios from 'axios';
 import useSWR from 'swr';
+import CategoriesCarousel from '../../components/CategoriesCarousel';
+import PostCard from '../../components/PostCard';
+
 import {COLORS} from '../../utils/Colors';
 
 const HomeScreen = () => {
@@ -37,9 +38,9 @@ const HomeScreen = () => {
         ListHeaderComponent={<CategoriesCarousel />}
         data={data?.plates}
         renderItem={({item}) => (
-          <PostCard plate={item} host={item.host} key={item.id} />
+          <PostCard plate={item} host={item.host} key={item._id} />
         )}
-        keyExtractor={plate => plate.index}
+        keyExtractor={plate => plate._id}
       />
       <View
         style={{
