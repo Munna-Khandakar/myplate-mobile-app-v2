@@ -7,9 +7,11 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Button,
 } from 'react-native';
 import useSWR from 'swr';
 import {useNavigation} from '@react-navigation/native';
+import {launchImageLibrary} from 'react-native-image-picker';
 import {COLORS} from '../../utils/Colors';
 import BackButton from '../common/BackButton';
 import {getMyProfile} from '../../requests/auth';
@@ -20,6 +22,30 @@ const PROFILE_IMG =
 export default function MyProfileScreen() {
   const navigation = useNavigation();
   const {data, isLoading, error} = useSWR('/user/me', getMyProfile);
+  const [selectedImage, setSelectedImage] = React.useState('');
+
+  const openImagePicker = () => {
+    const options = {
+      mediaType: 'photo',
+      includeBase64: false,
+      maxHeight: 2000,
+      maxWidth: 2000,
+    };
+    //@ts-ignore
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+        //@ts-ignore
+      } else if (response.error) {
+        //@ts-ignore
+        console.log('Image picker error: ', response.error);
+      } else {
+        //@ts-ignore
+        let imageUri = response.uri || response.assets?.[0]?.uri;
+        setSelectedImage(imageUri);
+      }
+    });
+  };
 
   if (isLoading) return <Text style={{color: COLORS.main}}>Loading...</Text>;
   if (error) return <Text style={{color: COLORS.main}}>Error...</Text>;
@@ -29,6 +55,7 @@ export default function MyProfileScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.titleBar}>
           <BackButton />
+          <Button title="Choose from Device" onPress={openImagePicker} />
         </View>
 
         <View style={{alignSelf: 'center'}}>
