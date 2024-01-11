@@ -1,4 +1,4 @@
-import {Image, ScrollView, StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import React from 'react';
 import {COLORS} from '../../utils/Colors';
 import {useNavigation} from '@react-navigation/native';
@@ -25,17 +25,21 @@ const MenuScreen = () => {
           title={'My Posts'}
           subTitle={'Posts you posted on your timeline'}
           icon={require('../../assets/icons/review.png')}
+          //@ts-ignore
+          pressHandler={() => navigation.navigate('MyPosts')}
         />
         <MenuItem
           title={'My Orders'}
           subTitle={'Orders you placed to buy from a host'}
           icon={require('../../assets/icons/my-order.png')}
+          //@ts-ignore
           pressHandler={() => navigation.navigate('MyOrders')}
         />
         <MenuItem
           title={'My Delivery'}
           subTitle={'Your delivery system tasks'}
           icon={require('../../assets/icons/delivery-man.png')}
+          //@ts-ignore
           pressHandler={() => navigation.navigate('Delivery')}
         />
 
@@ -43,6 +47,7 @@ const MenuScreen = () => {
           title={'Customer Orders'}
           subTitle={'Orders you need to prepare for your customers'}
           icon={require('../../assets/icons/customer-order.png')}
+          //@ts-ignore
           pressHandler={() => navigation.navigate('Customerorders')}
         />
 
@@ -50,6 +55,7 @@ const MenuScreen = () => {
           title={'My Addresses'}
           subTitle={'Add and select your address'}
           icon={require('../../assets/icons/location.png')}
+          //@ts-ignore
           pressHandler={() => navigation.navigate('MyAddress')}
         />
       </ScrollView>

@@ -18,6 +18,7 @@ import {getAddress} from '../../requests/address';
 import {AddressFormInputs, AddressType} from '../../types/AddressType';
 import CustomModal from '../../components/common/CustomModal';
 import {AddressForm} from '../../components/AddressForm';
+import BackButton from '../../components/common/BackButton';
 
 const editIcon: ImageSourcePropType = require('./../../assets/icons/edit.png');
 const deleteIcon: ImageSourcePropType = require('./../../assets/icons/delete.png');
@@ -116,14 +117,7 @@ const AddressScreen = ({navigation}: {navigation: any}) => {
           alignItems: 'center',
         }}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={{marginEnd: 15}}>
-            <Image
-              source={backIcon}
-              style={{height: 20, width: 20, resizeMode: 'contain'}}
-            />
-          </TouchableOpacity>
+          <BackButton />
           <View>
             <Text
               style={{fontSize: 20, fontWeight: 'bold', color: COLORS.main}}>

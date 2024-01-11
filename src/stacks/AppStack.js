@@ -155,7 +155,7 @@ const AppStack = () => {
         <Stack.Screen
           name="MyProfileScreen"
           component={MyProfileScreen}
-          options={{title: 'My Profile'}}
+          options={{title: 'My Profile', headerShown: false}}
         />
       </Stack.Navigator>
     </>

@@ -13,7 +13,6 @@ const useAuthStore = create<AuthStore>(set => ({
   user_token: null,
 
   storeUser: (params: any) => {
-    console.log('params', params);
     set({
       user: params,
     });

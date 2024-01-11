@@ -1,25 +1,33 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React from 'react';
+import {useNavigation} from '@react-navigation/native';
+import useSWR from 'swr';
 import {COLORS} from '../../utils/Colors';
-import {NavigationProp} from '@react-navigation/native';
-import useAuthStore from '../../stores/authStore';
+import {getMyProfile} from '../../requests/auth';
 
-type ProfileCardProps = {
-  navigation: NavigationProp<Record<string, object | undefined>, string>;
-};
-const ProfileCard = (props: ProfileCardProps) => {
-  const {navigation} = props;
-  const user = useAuthStore(state => state.user);
+const ProfileCard = () => {
+  const navigation = useNavigation();
+
+  const {data, isLoading, error} = useSWR('/user/me', getMyProfile);
+
+  if (isLoading) {
+    return <Text style={{color: COLORS.main}}>Loading...</Text>;
+  }
+
+  if (error) {
+    return <Text style={{color: COLORS.main}}>Error</Text>;
+  }
 
   return (
     <TouchableOpacity
       style={styles.profile}
+      //@ts-ignore
       onPress={() => navigation.navigate('MyProfileScreen')}>
       <Image
         style={styles.profileImage}
         source={
-          user?.userId?.profile_image
-            ? user?.userId?.profile_image
+          data?.profilePicture
+            ? data?.profilePicture
             : require('../../assets/user-icon.png')
         }
       />
@@ -32,14 +40,14 @@ const ProfileCard = (props: ProfileCardProps) => {
           }}
           ellipsizeMode="tail"
           numberOfLines={1}>
-          {user?.userId?.name}
+          {data?.username}
         </Text>
         <Text
           style={{
             color: COLORS.textColorSecondary,
             fontSize: 12,
           }}>
-          {user?.userId?.myPromoCode}
+          {data?.phone}
         </Text>
       </View>
     </TouchableOpacity>
