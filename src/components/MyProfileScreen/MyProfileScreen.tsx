@@ -8,30 +8,21 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import {COLORS} from '../../utils/Colors';
+import useSWR from 'swr';
 import {useNavigation} from '@react-navigation/native';
+import {COLORS} from '../../utils/Colors';
 import BackButton from '../common/BackButton';
-
-const MEDIA = [
-  {
-    id: 1,
-    url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Good_Food_Display_-_NCI_Visuals_Online.jpg/800px-Good_Food_Display_-_NCI_Visuals_Online.jpg',
-  },
-  {
-    id: 2,
-    url: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  },
-  {
-    id: 3,
-    url: 'https://media.post.rvohealth.io/wp-content/uploads/2022/09/frozen-dinner-meal-meatloaf-mashed-potatoes-vegetables-732x549-thumbnail-732x549.jpg',
-  },
-];
+import {getMyProfile} from '../../requests/auth';
 
 const PROFILE_IMG =
   'https://scontent.fdac99-1.fna.fbcdn.net/v/t39.30808-6/358118255_2558848400949742_2342771989776370285_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=efb6e6&_nc_eui2=AeE_JeqQ4kUhMjfnyecnRqG4Hq1rmaP6JO0erWuZo_ok7XU6lkq5qBVkqh88UQhbWywceIelWYrJxHBP6CU6PLpf&_nc_ohc=DGB-NmzOE6AAX8eRgeJ&_nc_ht=scontent.fdac99-1.fna&oh=00_AfAQ9pJx4FXMlbqq97-ubyZPjx2y44MB1S1Pyyt0j-gdUQ&oe=65A5C0BD';
 
 export default function MyProfileScreen() {
   const navigation = useNavigation();
+  const {data, isLoading, error} = useSWR('/user/me', getMyProfile);
+
+  if (isLoading) return <Text style={{color: COLORS.main}}>Loading...</Text>;
+  if (error) return <Text style={{color: COLORS.main}}>Error...</Text>;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -43,7 +34,13 @@ export default function MyProfileScreen() {
         <View style={{alignSelf: 'center'}}>
           <View style={styles.profileImage}>
             <Image
-              source={{url: PROFILE_IMG}}
+              source={{
+                uri: `${
+                  data?.user?.profilePicture
+                    ? data?.user?.profilePicture
+                    : PROFILE_IMG
+                }`,
+              }}
               style={styles.image}
               resizeMode="center"
             />
@@ -59,16 +56,18 @@ export default function MyProfileScreen() {
 
         <View style={styles.infoContainer}>
           <Text style={[styles.text, {fontWeight: '200', fontSize: 36}]}>
-            Munna Khandakar
+            {data?.user?.username}
           </Text>
           <Text style={[styles.text, {color: '#AEB5BC', fontSize: 14}]}>
-            017948075777
+            {data?.user?.phone}
           </Text>
         </View>
 
         <View style={styles.statsContainer}>
           <View style={styles.statsBox}>
-            <Text style={[styles.text, {fontSize: 24}]}>483</Text>
+            <Text style={[styles.text, {fontSize: 24}]}>
+              {data?.plateCount}
+            </Text>
             <Text style={[styles.text, styles.subText]}>Posts</Text>
           </View>
           <View
@@ -86,22 +85,38 @@ export default function MyProfileScreen() {
         </View>
 
         <View style={{marginTop: 32}}>
+          <Text
+            style={{
+              color: COLORS.main,
+              fontSize: 15,
+              fontWeight: '600',
+              marginLeft: 10,
+              marginBottom: 10,
+            }}>
+            Your Recent Posts
+          </Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {MEDIA.map(item => (
-              <View style={styles.mediaImageContainer}>
-                <Image
-                  source={{url: item.url}}
-                  style={styles.image}
-                  resizeMode="cover"></Image>
-              </View>
-            ))}
+            {data?.recentPosts &&
+              data?.recentPosts.length > 0 &&
+              data?.recentPosts.map(item => (
+                <View style={styles.mediaImageContainer} key={item._id}>
+                  <Image
+                    source={{uri: item.images[0]}}
+                    style={styles.image}
+                    resizeMode="cover"></Image>
+                </View>
+              ))}
           </ScrollView>
         </View>
         <Text style={[styles.subText, styles.recent]}>Quick Settings</Text>
         <View style={{alignItems: 'flex-start', marginLeft: 10}}>
           <View style={styles.recentItem}>
             <View style={styles.activityIndicator}></View>
-            <TouchableOpacity onPress={() => navigation.navigate('MyAddress')}>
+            <TouchableOpacity
+              onPress={() => {
+                //@ts-ignore
+                navigation.navigate('MyAddress');
+              }}>
               <Text style={{fontWeight: '400'}}>Update your address</Text>
             </TouchableOpacity>
           </View>

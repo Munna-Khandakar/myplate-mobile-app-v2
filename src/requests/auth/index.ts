@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {API_URL} from '../../utils/Requests';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {PlateResponseType} from '../../types/Plate';
 
 export const fetchMyProfile = async () => {
   const token = await AsyncStorage.getItem('user_token');
@@ -21,9 +22,15 @@ export const fetchMyProfile = async () => {
 };
 
 type MyProfileType = {
-  username: string;
-  phone: string;
-  profilePicture?: string;
+  user: {
+    _id: string;
+    username: string;
+    phone: string;
+    profilePicture?: string;
+    isVerified?: boolean;
+  };
+  recentPosts: PlateResponseType[];
+  plateCount: number;
 };
 
 export const getMyProfile = async (): Promise<MyProfileType> => {

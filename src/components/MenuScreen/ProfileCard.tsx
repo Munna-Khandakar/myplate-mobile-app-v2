@@ -26,8 +26,8 @@ const ProfileCard = () => {
       <Image
         style={styles.profileImage}
         source={
-          data?.profilePicture
-            ? data?.profilePicture
+          data?.user?.profilePicture
+            ? data?.user?.profilePicture
             : require('../../assets/user-icon.png')
         }
       />
@@ -40,14 +40,14 @@ const ProfileCard = () => {
           }}
           ellipsizeMode="tail"
           numberOfLines={1}>
-          {data?.username}
+          {data?.user?.username}
         </Text>
         <Text
           style={{
             color: COLORS.textColorSecondary,
             fontSize: 12,
           }}>
-          {data?.phone}
+          {data?.user?.phone}
         </Text>
       </View>
     </TouchableOpacity>
