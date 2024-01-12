@@ -23,9 +23,8 @@ import BackButton from '../../components/common/BackButton';
 const editIcon: ImageSourcePropType = require('./../../assets/icons/edit.png');
 const deleteIcon: ImageSourcePropType = require('./../../assets/icons/delete.png');
 const plusIcon: ImageSourcePropType = require('./../../assets/icons/plus.png');
-const backIcon: ImageSourcePropType = require('./../../assets/icons/back.png');
 
-const AddressScreen = ({navigation}: {navigation: any}) => {
+const AddressScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<AddressType>();

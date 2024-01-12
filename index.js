@@ -4,7 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import App from './App';
 import {name as appName} from './app.json';
 
-const API_URL = 'http://192.168.0.120:3000/api';
+// const API_URL = 'http://192.168.0.120:3000/api';
+const API_URL = 'https://grumpy-earrings-pig.cyclic.app/api';
 
 // Check for token and set authorization header conditionally
 AsyncStorage.getItem('user_token')

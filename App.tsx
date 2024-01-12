@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import AppStack from './src/stacks/AppStack';
 import AuthStack from './src/stacks/AuthStack';
@@ -10,27 +10,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const App = () => {
   const storeUserToken = useAuthStore(state => state.storeUserToken);
-  const [token, setToken] = useState('');
+  const userToken = useAuthStore(state => state.user_token);
+
   useEffect(() => {
     AsyncStorage.getItem('user_token')
       .then(user_token => {
         if (user_token) {
-          console.log('token received');
-          setToken(user_token);
           storeUserToken(user_token);
-        } else {
-          console.warn('APP=>Token not found in storage');
         }
       })
       .catch(error => {
         console.error('Error retrieving token from storage:', error);
       });
-  }, [token]);
+  }, [userToken]);
 
   return (
     <SafeAreaProvider style={{backgroundColor: COLORS.backgroundColor}}>
       <NavigationContainer>
-        {token ? <AppStack /> : <AuthStack />}
+        {userToken ? <AppStack /> : <AuthStack />}
       </NavigationContainer>
       <Toast />
     </SafeAreaProvider>

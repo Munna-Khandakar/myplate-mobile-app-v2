@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -15,6 +15,8 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {COLORS} from '../../utils/Colors';
 import BackButton from '../common/BackButton';
 import {getMyProfile} from '../../requests/auth';
+import CustomModal from '../common/CustomModal';
+import NameChangeForm from './NameChangeForm';
 
 const PROFILE_IMG =
   'https://scontent.fdac99-1.fna.fbcdn.net/v/t39.30808-6/358118255_2558848400949742_2342771989776370285_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=efb6e6&_nc_eui2=AeE_JeqQ4kUhMjfnyecnRqG4Hq1rmaP6JO0erWuZo_ok7XU6lkq5qBVkqh88UQhbWywceIelWYrJxHBP6CU6PLpf&_nc_ohc=DGB-NmzOE6AAX8eRgeJ&_nc_ht=scontent.fdac99-1.fna&oh=00_AfAQ9pJx4FXMlbqq97-ubyZPjx2y44MB1S1Pyyt0j-gdUQ&oe=65A5C0BD';
@@ -23,6 +25,7 @@ export default function MyProfileScreen() {
   const navigation = useNavigation();
   const {data, isLoading, error} = useSWR('/user/me', getMyProfile);
   const [selectedImage, setSelectedImage] = React.useState('');
+  const [modalVisible, setModalVisible] = useState(false);
 
   const openImagePicker = () => {
     const options = {
@@ -47,6 +50,10 @@ export default function MyProfileScreen() {
     });
   };
 
+  const onFormSubmit = async (data: {username: string}) => {
+    setModalVisible(false);
+  };
+
   if (isLoading) return <Text style={{color: COLORS.main}}>Loading...</Text>;
   if (error) return <Text style={{color: COLORS.main}}>Error...</Text>;
 
@@ -55,7 +62,6 @@ export default function MyProfileScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.titleBar}>
           <BackButton />
-          <Button title="Choose from Device" onPress={openImagePicker} />
         </View>
 
         <View style={{alignSelf: 'center'}}>
@@ -65,6 +71,8 @@ export default function MyProfileScreen() {
                 uri: `${
                   data?.user?.profilePicture
                     ? data?.user?.profilePicture
+                    : selectedImage
+                    ? selectedImage
                     : PROFILE_IMG
                 }`,
               }}
@@ -73,21 +81,35 @@ export default function MyProfileScreen() {
             />
           </View>
           <View style={styles.active}></View>
-          <View style={styles.add}>
+          <TouchableOpacity style={styles.add} onPress={openImagePicker}>
             <Image
               source={require('../../assets/icons/add.png')}
               style={{height: 20, width: 20}}
             />
-          </View>
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.infoContainer}>
-          <Text style={[styles.text, {fontWeight: '200', fontSize: 36}]}>
+        <View style={[styles.infoContainer]}>
+          <Text
+            style={[
+              styles.text,
+              {fontWeight: '200', fontSize: 36, color: COLORS.main},
+            ]}>
             {data?.user?.username}
           </Text>
           <Text style={[styles.text, {color: '#AEB5BC', fontSize: 14}]}>
             {data?.user?.phone}
           </Text>
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            style={[
+              {alignSelf: 'center', position: 'absolute', top: -15, right: -25},
+            ]}>
+            <Image
+              source={require('../../assets/icons/pencil.png')}
+              style={{height: 25, width: 25}}
+            />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.statsContainer}>
@@ -149,6 +171,16 @@ export default function MyProfileScreen() {
           </View>
         </View>
       </ScrollView>
+      <CustomModal
+        onClose={() => {
+          setModalVisible(false);
+        }}
+        isOpen={modalVisible}>
+        <NameChangeForm
+          onFormSubmit={onFormSubmit}
+          closeForm={() => setModalVisible(false)}
+        />
+      </CustomModal>
     </SafeAreaView>
   );
 }
@@ -160,7 +192,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: 'HelveticaNeue',
-    color: '#52575D',
   },
   image: {
     flex: 1,
