@@ -18,6 +18,8 @@ const MyProfileInput = ({
           value={value}
           style={[styles.input, {backgroundColor: edit ? 'white' : '#B2BEB5'}]}
           editable={edit}
+          placeholderTextColor={COLORS.main}
+          selectionColor={COLORS.main}
         />
       </View>
     </View>

@@ -32,6 +32,8 @@ const FormInputField = ({
         placeholder={placeholder}
         style={{flex: 1, paddingVertical: 0, color: COLORS.main}}
         value={value}
+        placeholderTextColor={COLORS.main}
+        selectionColor={COLORS.main}
         secureTextEntry={secureTextEntry}
         onChangeText={onChangeHandlar}
       />

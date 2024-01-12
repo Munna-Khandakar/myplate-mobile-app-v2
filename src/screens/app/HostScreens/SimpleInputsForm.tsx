@@ -188,6 +188,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 40,
     borderBottomWidth: 1,
+    color: COLORS.main,
   },
   iconContainer: {
     backgroundColor: COLORS.tranparenSecondary,

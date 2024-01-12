@@ -1,24 +1,10 @@
-/**
- * Onboarding Screen
- * - Munna Khandakar
- *
- * Here some images and text will be shown only on the initial loading
- * 103 create Onboading Screen
- * 06/10/2022
- */
-
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  Animated,
-  SafeAreaView,
-} from 'react-native';
+import {StyleSheet, View, FlatList, Animated, SafeAreaView} from 'react-native';
 import React, {useState, useRef} from 'react';
 import OnBoardingItem from '../../components/OnBoardingItem';
 import OnBoardingPaginator from '../../components/OnBoardingPaginator';
 import OnBoardingNextButton from '../../components/OnBoardingNextButton';
+import {useNavigation} from '@react-navigation/native';
+
 const data = [
   {
     id: 1,
@@ -41,11 +27,13 @@ const data = [
     image: require('../../assets/onboarding/order.gif'),
   },
 ];
-const OnBoardingScreen = ({navigation}) => {
+const OnBoardingScreen = () => {
+  const navigation = useNavigation();
   const scrollX = useRef(new Animated.Value(0)).current;
   const [currentIndex, setCurrentIndex] = useState(0);
   const slideRef = useRef(null);
 
+  //@ts-ignore
   const viewableItemsChanged = useRef(({viewableItems}) => {
     setCurrentIndex(viewableItems[0].index);
   }).current;
@@ -54,11 +42,11 @@ const OnBoardingScreen = ({navigation}) => {
 
   const scrollTo = () => {
     if (currentIndex < data.length - 1) {
+      //@ts-ignore
       slideRef.current.scrollToIndex({index: currentIndex + 1});
     } else {
-      // after last step
-      navigation.navigate('HomeScreen');
-      // console.log('last item');
+      //@ts-ignore
+      navigation.navigate('LoginScreen');
     }
   };
 
@@ -69,9 +57,9 @@ const OnBoardingScreen = ({navigation}) => {
           data={data}
           renderItem={({item}) => <OnBoardingItem item={item} />}
           horizontal
-          // showsHorizontalScrollIndicator
           pagingEnabled
           bounces={false}
+          //@ts-ignore
           keyExtractor={item => item.id}
           onScroll={Animated.event(
             [{nativeEvent: {contentOffset: {x: scrollX}}}],

@@ -127,7 +127,9 @@ const ForgetPasswordScreen = ({navigation}) => {
             />
             <TextInput
               placeholder="Phone"
-              style={{flex: 1, paddingVertical: 0}}
+              style={{flex: 1, paddingVertical: 0, color: COLORS.main}}
+              placeholderTextColor={COLORS.main}
+              selectionColor={COLORS.main}
               value={phone}
               onChangeText={txt => setPhone(txt)}
             />

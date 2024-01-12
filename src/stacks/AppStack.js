@@ -11,8 +11,6 @@ import MenuStack from './MenuStack';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import CustomerOrderStack from './CustomerOrderStack';
 import MyOrderStack from './MyOrdersStack';
-import useAuthStore from '../stores/authStore';
-import {fetchMyProfile} from '../requests/auth';
 import MyProfileScreen from '../screens/app/MyProfileScreen';
 
 const Tab = createMaterialTopTabNavigator();
@@ -115,17 +113,6 @@ const TabNavigationStack = () => {
   );
 };
 const AppStack = () => {
-  const user_token = useAuthStore(state => state.user_token);
-  const storeUser = useAuthStore(state => state.storeUser);
-  const getMyProfile = async () => {
-    if (user_token) {
-      const myProfile = await fetchMyProfile();
-      storeUser(myProfile);
-    }
-  };
-  React.useEffect(() => {
-    getMyProfile();
-  }, []);
   return (
     <>
       <SafeAreaView>

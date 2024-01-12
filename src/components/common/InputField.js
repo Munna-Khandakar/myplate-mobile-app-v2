@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import {COLORS} from '../../utils/Colors';
 
 const InputField = ({
   label,
@@ -31,6 +32,8 @@ const InputField = ({
       <View style={{position: 'relative'}}>
         <TextInput
           style={styles.textInput}
+          placeholderTextColor={COLORS.main}
+          selectionColor={COLORS.main}
           secureTextEntry={isPassword && !isPasswordVisible}
           {...rest}
         />
@@ -74,6 +77,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
+    color: COLORS.main,
   },
   errorMessage: {
     color: 'red',

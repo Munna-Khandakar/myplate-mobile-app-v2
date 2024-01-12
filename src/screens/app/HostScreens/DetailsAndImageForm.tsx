@@ -146,5 +146,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginRight: 10,
     marginTop: 10,
+    color: COLORS.main,
   },
 });
