@@ -5,6 +5,7 @@ import TitleWithSubtitle from '../../../components/TitleWithSubtitle';
 import CategoryItem from './CategoryItem';
 import {CategoryItemType} from '../../../types/CategoryItemType';
 import {HostPlateType} from '../../../types/HostPlateType';
+import CategoryCardSkeleton from '../../../components/skeleton/CategoryCardSkeleton';
 
 type HostCarouselProps = {
   form: UseFormReturn<HostPlateType, any, undefined>;
@@ -21,28 +22,31 @@ const HostCarousel = (props: HostCarouselProps) => {
         title={`Select Category`}
         subtitle={`Select the category that suits your plate most →`}
       />
-
-      <Controller
-        name={'category'}
-        control={control}
-        rules={{
-          required: {value: true, message: 'Please Select a Category'},
-        }}
-        render={() => (
-          <View style={styles.container}>
-            {category.map(item => (
-              <CategoryItem
-                key={item._id}
-                item={item}
-                selected={watch('category') == item._id}
-                onPress={() => {
-                  setValue('category', item._id);
-                }}
-              />
-            ))}
-          </View>
-        )}
-      />
+      {!category ? (
+        <CategoryCardSkeleton />
+      ) : (
+        <Controller
+          name={'category'}
+          control={control}
+          rules={{
+            required: {value: true, message: 'Please Select a Category'},
+          }}
+          render={() => (
+            <View style={styles.container}>
+              {category.map(item => (
+                <CategoryItem
+                  key={item._id}
+                  item={item}
+                  selected={watch('category') == item._id}
+                  onPress={() => {
+                    setValue('category', item._id);
+                  }}
+                />
+              ))}
+            </View>
+          )}
+        />
+      )}
     </View>
   );
 };

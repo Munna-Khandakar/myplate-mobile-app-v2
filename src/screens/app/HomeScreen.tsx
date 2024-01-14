@@ -13,6 +13,8 @@ import CategoriesCarousel from '../../components/CategoriesCarousel';
 import PostCard from '../../components/PostCard';
 
 import {COLORS} from '../../utils/Colors';
+import PlateSkeletons from '../../components/skeleton/PlateSkeleton';
+import CategoryCardSkeleton from '../../components/skeleton/CategoryCardSkeleton';
 
 const HomeScreen = () => {
   const getPlate = async (url: string) => {
@@ -29,7 +31,7 @@ const HomeScreen = () => {
   }
 
   if (isLoading) {
-    return <ActivityIndicator color={COLORS.main} />;
+    return <PlateSkeletons />;
   }
 
   return (
