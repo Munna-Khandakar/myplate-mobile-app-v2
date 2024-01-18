@@ -30,7 +30,6 @@ const CategoriesCarousel = (props: CategoriesCarouselProps) => {
 
   return (
     <FlatList
-      style={{marginTop: 10}}
       data={data}
       renderItem={({item}) => (
         <CategoryItemChip

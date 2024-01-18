@@ -189,7 +189,6 @@ export default PostCard;
 
 const styles = StyleSheet.create({
   PostCardContainer: {
-    marginTop: 10,
     borderTopColor: COLORS.tranparenSecondary,
     borderTopWidth: 1,
     borderBottomColor: COLORS.tranparenSecondary,

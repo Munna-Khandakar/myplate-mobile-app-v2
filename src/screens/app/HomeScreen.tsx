@@ -1,4 +1,4 @@
-import {Text, FlatList} from 'react-native';
+import {Text, FlatList, View} from 'react-native';
 import React from 'react';
 import axios from 'axios';
 import useSWR from 'swr';
@@ -26,21 +26,24 @@ const HomeScreen = () => {
   }
 
   return (
-    <FlatList
-      ListHeaderComponent={
-        <CategoriesCarousel onPressHandler={onPressHandler} />
-      }
-      data={data?.plates}
-      renderItem={
-        isLoading
-          ? () => <PlateSkeletons />
-          : ({item}) => (
-              <PostCard plate={item} host={item.host} key={item._id} />
-            )
-      }
-      showsVerticalScrollIndicator={false}
-      keyExtractor={plate => plate._id}
-    />
+    <View>
+      <FlatList
+        ListHeaderComponent={
+          <CategoriesCarousel onPressHandler={onPressHandler} />
+        }
+        ListHeaderComponentStyle={{marginVertical: 10}}
+        ItemSeparatorComponent={() => (
+          <View style={{height: 10, backgroundColor: 'transparent'}} />
+        )}
+        data={data?.plates}
+        renderItem={({item}) => (
+          <PostCard plate={item} host={item.host} key={item._id} />
+        )}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={plate => plate._id}
+      />
+      {isLoading && <PlateSkeletons />}
+    </View>
   );
 };
 
